@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Scanner;
 
 public class Main{
     public static void main(String[] args){
@@ -19,53 +20,74 @@ class Tratador{
     public void dividirCaracteres(File f,int caracteres){//Este es más fácil con un Buffer.
         int mod = 1;
         try(FileReader reader = new FileReader(f)){
-            int x = 0;
-            FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
-            while(x != -1){
-                for(int i = 0;i < caracteres && x != -1;i++){
-                    x = reader.read();
-                    if(x != -1){
-                        writer.append((char)x);
-                    }
-                }
-                writer.close();
-                if(x != -1){
-                    mod++;
-                    writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
-                }
-            }
-        }catch(IOException ex){
-            System.err.println(ex.getLocalizedMessage());
+
+        }catch(IOException e){
+
         }
+        // try(FileReader reader = new FileReader(f)){
+        //     int x = 0;
+        //     FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+        //     while(x != -1){
+        //         for(int i = 0;i < caracteres && x != -1;i++){
+        //             x = reader.read();
+        //             if(x != -1){
+        //                 writer.append((char)x);
+        //             }
+        //         }
+        //         writer.close();
+        //         if(x != -1){
+        //             mod++;
+        //             writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+        //         }
+        //     }
+        // }catch(IOException ex){
+        //     System.err.println(ex.getLocalizedMessage());
+        // }
     }
 
     public void dividirLineas(File f,int lineas){//Este es más fácil con un Scanner.
         int mod = 1;
-        try(FileReader reader = new FileReader(f)){
-            int x = 0;
+        try(Scanner sc = new Scanner(f)){
             FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
-            while(x != -1){
-                for(int i = 0;i < lineas;){
-                    x = reader.read();
-                    if(x == '\n'){
-                        i++;
-                        writer.append((char)x);
-                    }else if(x == -1){
-                        i++;
-                    }else{
-                        writer.append((char)x);
-                    }
+            while(sc.hasNextLine()){
+                for(int i = 0;i < lineas && sc.hasNextLine();i++){
+                    writer.append(sc.nextLine());
+                    writer.append("\n");
                 }
-                if(x != -1){
+                writer.close();
+                if(sc.hasNextLine()){
                     mod++;
-                    writer.close();
                     writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
                 }
             }
-            writer.close();
-        }catch(IOException ex){
-            System.err.println(ex.getLocalizedMessage());
+        }catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
         }
+        // try(FileReader reader = new FileReader(f)){
+        //     int x = 0;
+        //     FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+        //     while(x != -1){
+        //         for(int i = 0;i < lineas;){
+        //             x = reader.read();
+        //             if(x == '\n'){
+        //                 i++;
+        //                 writer.append((char)x);
+        //             }else if(x == -1){
+        //                 i++;
+        //             }else{
+        //                 writer.append((char)x);
+        //             }
+        //         }
+        //         if(x != -1){
+        //             mod++;
+        //             writer.close();
+        //             writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+        //         }
+        //     }
+        //     writer.close();
+        // }catch(IOException ex){
+        //     System.err.println(ex.getLocalizedMessage());
+        // }
     }
 
     public void unir(File[] fs){

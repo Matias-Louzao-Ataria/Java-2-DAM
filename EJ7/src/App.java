@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.Buffer;
 
 public class App {
     public static void main(String[] args) {
@@ -16,24 +17,16 @@ class Operador {
     String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
 
     public void menu(File f, String action) {
-        switch (action) {
-            case "n":
+        switch (Character.toLowerCase(action.charAt(0))) {
+            case 'n':
                 contar(f);//Hecho
                 break;
 
-            case "A":
-
+            case 'a':
+                ordenarAscendente(f);
                 break;
 
-            case "D":
-
-                break;
-
-            case "a":
-
-                break;
-
-            case "d":
+            case 'd':
 
                 break;
 
@@ -57,6 +50,10 @@ class Operador {
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
         }
+        
+    }
+    
+    private void ordenarAscendente(File f){
         
     }
 }
