@@ -5,7 +5,8 @@ public class Main{
         String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
         Tratador t = new Tratador();
         File f = new File(home+sep+"a.txt");
-        t.dividir(f,5,20);
+        //t.dividirCaracteres(f,4);
+        t.dividirLineas(f, 4);
         //File[] fs = { new File(home + sep + "generado.txt"), new File(home + sep + "guardado.txt"),new File(home + sep + "Enlaces.txt") };
         //File[] fs = {new File(home+sep+"a.txt"),new File(home+sep+"b.txt"),new File(home+sep+"c.txt")};
         //t.unir(fs);
@@ -13,37 +14,57 @@ public class Main{
 }
 
 class Tratador{
-    
     private String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
     
-    public void dividir(File f,int lineas,int caracteres){//FIXME Genera un fichero de más en blanco siempre a menos que tenga el último if y  escribe el -1.
-        String mod = "1";
+    public void dividirCaracteres(File f,int caracteres){//Este es más fácil con un Buffer.
+        int mod = 1;
         try(FileReader reader = new FileReader(f)){
             int x = 0;
-            FileWriter writer = new FileWriter(new File(home+sep+"Fichero"+mod+".txt"),true);
+            FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
             while(x != -1){
-                for(int i = 0;i < lineas;i++){
-                    for(int j = 0;j < caracteres;j++){
-                        x = reader.read();
-                        if((char)x == '\n' || x == -1){//
-
-                        }else{
-                            writer.append((char) x);
-                        }
+                for(int i = 0;i < caracteres && x != -1;i++){
+                    x = reader.read();
+                    if(x != -1){
+                        writer.append((char)x);
                     }
-                    writer.append("\n");
                 }
-                mod = Integer.toString((Integer.parseInt(mod)+1));
                 writer.close();
-                if(x != -1){//
-                    File f2 = new File(home+sep+"Fichero"+mod+".txt");
-                    writer = new FileWriter(f2,true);
+                if(x != -1){
+                    mod++;
+                    writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
                 }
-                
+            }
+        }catch(IOException ex){
+            System.err.println(ex.getLocalizedMessage());
+        }
+    }
+
+    public void dividirLineas(File f,int lineas){//Este es más fácil con un Scanner.
+        int mod = 1;
+        try(FileReader reader = new FileReader(f)){
+            int x = 0;
+            FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+            while(x != -1){
+                for(int i = 0;i < lineas;){
+                    x = reader.read();
+                    if(x == '\n'){
+                        i++;
+                        writer.append((char)x);
+                    }else if(x == -1){
+                        i++;
+                    }else{
+                        writer.append((char)x);
+                    }
+                }
+                if(x != -1){
+                    mod++;
+                    writer.close();
+                    writer = new FileWriter(home+sep+"Fichero"+mod+".txt",true);
+                }
             }
             writer.close();
-        }catch(IOException e){
-            System.err.println(e.getLocalizedMessage());
+        }catch(IOException ex){
+            System.err.println(ex.getLocalizedMessage());
         }
     }
 
