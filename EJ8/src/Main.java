@@ -30,8 +30,7 @@ class interpreter{
                 output.write(i);
             }
             output.close();
-        }catch(IOException e){
-            System.err.println(e.getLocalizedMessage());
+        }catch(IOException e){            System.err.println(e.getLocalizedMessage());
         }
     }
 
