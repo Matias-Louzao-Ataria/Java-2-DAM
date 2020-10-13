@@ -10,7 +10,7 @@ public class Main {
         String home = System.getProperty("user.home"),sep = System.getProperty("file.separator");
         File in = new File("cc.jpg"),out = new File(home+sep+"copia.jpg");
         interpreter interpretador = new interpreter();
-        long t1 = System.currentTimeMillis(),t1f = 0,t2,t2f;
+        long t1 = System.currentTimeMillis(),t1f = 0,t2 = 0,t2f = 0;
         interpretador.copiaSinBuffer(in,out);
         t1f = System.currentTimeMillis();
         System.err.println("Tiempo de ejecución: "+(t1f-t1)+"ms");
