@@ -9,13 +9,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
         String home = System.getProperty("user.home"),sep = System.getProperty("file.separator");
         long t1 = System.currentTimeMillis(),t1f = 0,t2,t2f;
-        File in = new File(home+sep+"mozilla.pdf"),out = new File(home+sep+"copia.pdf");
+        File in = new File("cc.jpg"),out = new File(home+sep+"copia.jpg");
         interpreter interpretador = new interpreter();
         interpretador.copiaSinBuffer(in,out);
         t1f = System.currentTimeMillis();
         System.err.println("Tiempo de ejecución: "+(t1f-t1)+"ms");
         t2 = System.currentTimeMillis();
-        interpretador.copiaConBuffer(in, new File(home+sep+"copia2.pdf"));
+        interpretador.copiaConBuffer(in, new File(home+sep+"copia2.jpg"));
         t2f = System.currentTimeMillis();
         System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
     }
