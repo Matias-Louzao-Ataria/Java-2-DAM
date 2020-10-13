@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Scanner;
 
@@ -101,10 +100,10 @@ class Operador {
         return lineas;
     }
 
-    public void escribir(Collection<String> a){
+    public void escribir(ArrayList<String> a){
         try(PrintWriter writer = new PrintWriter(new FileWriter(home + sep + "alfabetico.txt", true))){
             for (int i = 0; i < a.size(); i++) {
-                writer.append(((ArrayList<String>) a).get(i));
+                writer.append(a.get(i));
                 writer.append("\n");
             }
         }catch(IOException e){
