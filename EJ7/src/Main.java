@@ -100,10 +100,10 @@ class Operador {
         return lineas;
     }
 
-    public void escribir(ArrayList<String> a){
+    public void escribir(ArrayList<String> lista){
         try(PrintWriter writer = new PrintWriter(new FileWriter(home + sep + "alfabetico.txt", true))){
-            for (int i = 0; i < a.size(); i++) {
-                writer.append(a.get(i));
+            for (int i = 0; i < lista.size(); i++) {
+                writer.append(lista.get(i));
                 writer.append("\n");
             }
         }catch(IOException e){
