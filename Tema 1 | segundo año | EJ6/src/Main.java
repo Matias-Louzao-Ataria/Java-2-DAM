@@ -6,8 +6,8 @@ public class Main{
         String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
         Tratador t = new Tratador();
         File f = new File(home+sep+"a.txt");
-        //t.dividirCaracteres(f,4);
-        t.dividirLineas(f, 4);
+        t.dividirCaracteres(f,4);
+        //t.dividirLineas(f, 4);
         //File[] fs = { new File(home + sep + "generado.txt"), new File(home + sep + "guardado.txt"),new File(home + sep + "Enlaces.txt") };
         //File[] fs = {new File(home+sep+"a.txt"),new File(home+sep+"b.txt"),new File(home+sep+"c.txt")};
         //t.unir(fs);
@@ -20,7 +20,15 @@ class Tratador{
     public void dividirCaracteres(File f,int caracteres){//Este es más fácil con un Buffer.
         int mod = 1;
         try(FileReader reader = new FileReader(f)){
-
+            char[] buffer = new char[caracteres];
+            int i = 0;
+            while((i = reader.read(buffer)) != -1){
+                FileWriter writer = new FileWriter(home+sep+"Fichero"+mod+"txt",true);
+                writer.write(buffer);
+                mod++;
+                writer.close();
+            }
+            
         }catch(IOException e){
 
         }

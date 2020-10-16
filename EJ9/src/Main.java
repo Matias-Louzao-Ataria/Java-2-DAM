@@ -9,25 +9,18 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        /*Realiza un programa que permita almacenar, de forma binaria, los datos de unos alumnos en el ficheroalumnos.dat (guarda los datos de forma individual, no como un objeto).
-        Los datos de cada alumno serán:nombre como cadena de texto, fecha de nacimiento y código como enteros.
-        El programa debe realizarlas siguientes tareas:
-            Dar de alta nuevos alumnos.
-            Consultar alumnos.
-            Modificar alumnos.
-            Borrar alumnos.
-        El  programa  deberá  avisar  de  posibles  problemas  encontrados  como  puede  ser  el  intentar  borrar  un alumno que no exista.*/
         String home = System.getProperty("user.home"),sep = System.getProperty("file.separator");
         File f = new File(home+sep+"alumnos.dat");
-        int elect = 1;
+         
+        int elect = 2;
         Operaciones o = new Operaciones();
         switch(elect){
         case 1:
-            o.darDeAlta(f);
+            o.entrada(f);
             break;
 
         case 2:
-
+            o.mostrarAlumnos(f);
             break;
 
         case 3:
@@ -45,36 +38,46 @@ public class Main {
 }
 
 class Operaciones {
-    public void darDeAlta(File f) {
+    public void darDeAlta(File f,String nombre,String fecha,int id) {
+        FileOutputStream out = null;
+        DataOutputStream output = null;
         try {
-            FileOutputStream out = new FileOutputStream(f,true);
-            DataOutputStream output = new DataOutputStream(out);
-            Scanner sc = new Scanner(System.in);
-            String nombre,fecha;
-            int id;
+            out = new FileOutputStream(f,true);
+            output = new DataOutputStream(out);
 
-            System.out.println("Introduce el nombre del alumno:");
-            nombre = sc.nextLine();
-            System.out.println("Introduce la fecha de nacimiento del alumno: (dd-MM-yyyy)");
-            fecha = sc.nextLine();
-            System.out.println("Introduce la id del alumno:");
-            id = this.pedirEntero(sc);
             if(comprobarId(f, id)){
                 output.writeUTF(nombre);
                 output.writeUTF(fecha);
                 output.writeInt(id); 
-                output.writeUTF("%n");
+                System.out.println("Alumno agregado correctamente!");
             }else{
-                System.out.println("Alumno ya registrado o id repetida!");
+                System.out.println("Id de alumno repetida!");
             }
-            output.writeUTF("%n");
 
-            sc.close();
-            output.close();
-            out.close();
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
+        }finally{
+            try {
+                output.close();
+                out.close();
+            } catch (IOException e) {
+                System.err.println(e.getLocalizedMessage());
+            }
         }
+    }
+
+    public void entrada(File f){
+        String nombre,fecha;
+        int id;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Introduce el nombre del alumno:");
+        nombre = sc.nextLine();
+        System.out.println("Introduce la fecha de nacimiento del alumno: (dd-MM-yyyy)");
+        fecha = sc.nextLine();
+        System.out.println("Introduce la id del alumno:");
+        id = this.pedirEntero(sc);
+        sc.close();
+        darDeAlta(f, nombre, fecha, id);
     }
 
     public int pedirEntero(Scanner sc) {
@@ -91,28 +94,55 @@ class Operaciones {
     }
 
     public boolean comprobarId(File f,int id){
-        int i = 0;
+        int idActual = 0;
         try{
             FileInputStream in = new FileInputStream(f);
             DataInputStream input = new DataInputStream(in);
 
+            if(input.available() <= 0){
+                return true;
+            }
 
-            try{
-                while (true && i != id) {
-                    input.readUTF();
-                    i = input.readInt();
+            while(idActual == 0 && input.available() > 1){
+                input.readUTF();
+                input.readUTF();
+                idActual = input.readInt();
+                System.out.println(idActual);
+                if(id == idActual){
+                    return false;
+                }else{
+                    idActual = 0;
                 }
-            }catch(EOFException e){
+            }
+            
+            input.close();
+            in.close();
+        }catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+        }
+        return true;
+    }
+
+    public void mostrarAlumnos(File f){
+        FileInputStream in = null;
+        DataInputStream input = null;
+        try{
+            in = new FileInputStream(f);
+            input = new DataInputStream(in);
+
+            while(true){
+                System.out.printf("Nombre: %s, fecha de nacimiento: %s, id %d\n",input.readUTF(),input.readUTF(),input.readInt());
+            }
+
+        }catch(IOException e){
+            System.out.println("Final del archivo!");
+        }finally{
+            try {
                 input.close();
                 in.close();
+            } catch (IOException e) {
+                System.err.println(e.getLocalizedMessage());                
             }
-        }catch(IOException e){
-            System.out.println(e.getLocalizedMessage());
-        }
-        if(i == id){
-            return false;
-        }else{
-            return true;
         }
     }
 }

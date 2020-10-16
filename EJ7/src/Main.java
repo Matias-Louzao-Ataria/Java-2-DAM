@@ -12,7 +12,7 @@ public class Main {
         String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
         Operador o = new Operador();
         File f = new File(home+sep+"a.txt");
-        o.menu(f,'D');
+        o.menu(f,'n');
     }
 }
 
@@ -48,17 +48,31 @@ class Operador {
     }
 
     private void contar(File f) {
-        try(FileReader reader = new FileReader(f);) {
-            int x = 0,lineas = 0,palabras = 0;
-            while((x = reader.read()) != -1){
-                if((""+((char)x)).contains("\t") || (""+((char)x)).contains(" ")){
-                    palabras++;
-                }else if((""+((char)x)).contains("\n")){
-                    lineas++;
-                    palabras++;
+        int x = 0,lineas = 0,palabras = 0;
+        try(Scanner sc = new Scanner(f)) {
+            String actual = "",linea = "";
+            while(sc.hasNextLine()){
+                lineas++;
+                linea = sc.nextLine();
+                Scanner sc2 = new Scanner(linea);
+                while(sc2.hasNext()){
+                    actual = sc2.next();
+                    if(actual.trim().replace(" ","").replace("   ", "") != ""){
+                        palabras++;
+                    }
                 }
             }
             System.out.println("El archivo tiene: "+lineas+" lineas y "+palabras+" palabras.");
+            // int x = 0,lineas = 0,palabras = 0;
+            // while((x = reader.read()) != -1){
+            //     if((""+((char)x)).contains("\t") || (""+((char)x)).contains(" ")){
+            //         palabras++;
+            //     }else if((""+((char)x)).contains("\n")){
+            //         lineas++;
+            //         palabras++;
+            //     }
+            // }
+            // System.out.println("El archivo tiene: "+lineas+" lineas y "+palabras+" palabras.");
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
         }
