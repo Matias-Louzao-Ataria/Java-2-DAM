@@ -123,7 +123,7 @@ class Alumno{
 
 
 
-class Operaciones{
+class Operaciones{//TODO Fecha
     private ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
     private String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
     private File f = new File(home + sep + "alumnos.dat");
