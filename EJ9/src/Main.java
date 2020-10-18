@@ -37,7 +37,7 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         int elect = 0,id = 0;
-        Operaciones o = new Operaciones();
+        Operaciones o = new Operaciones(sc);
         while(elect != 5){
             System.out.println("1.- Dar de alta.\n2.- Consultar alumno.\n3.- Modificar alumno.\n4.- Borar alumno.\n5.- Salir.\n");
             elect = Operaciones.pedirEntero(sc);
@@ -72,6 +72,7 @@ public class Main {
                     System.out.println("Acción no reconocida!");
             }
         }
+        sc.close();
     }
 }
 
@@ -127,8 +128,10 @@ class Operaciones{//TODO Fecha
     private ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
     private String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
     private File f = new File(home + sep + "alumnos.dat");
+    private Scanner sc;
 
-    public Operaciones(){
+    public Operaciones(Scanner sc){
+        this.sc = sc;
         try {
             if (f.exists() && f.length() > 0) {
                 FileInputStream in = new FileInputStream(f);
@@ -156,7 +159,14 @@ class Operaciones{//TODO Fecha
         boolean echo = false;
         for (Alumno alumno : alumnos) {
             if(alumno.getId() == id){
-                System.out.printf("Nombre: %s, Fecha de nacimiento: %d, ID: %d.\n",alumno.getNombre(),alumno.getFecha(),alumno.getId());
+                String fecha = String.valueOf(alumno.getFecha());
+                if(fecha.length() > 7){
+                System.out.printf("Nombre: %s, Fecha de nacimiento: %s/%s/%s, ID: %d.\n", alumno.getNombre(),fecha.substring(0, 2), fecha.substring(2, 4), fecha.substring(4, fecha.length()),alumno.getId());
+
+                }else{
+                System.out.printf("Nombre: %s, Fecha de nacimiento: %s/%s/%s, ID: %d.\n", alumno.getNombre(),fecha.substring(0, 1), fecha.substring(1, 3), fecha.substring(3, fecha.length()),alumno.getId());
+
+                }
                 echo = true;
             }
         }
@@ -218,25 +228,32 @@ class Operaciones{//TODO Fecha
     }
 
     public void entradaDeDatos(boolean alta,int pos){
-        Scanner sc = new Scanner(System.in);
         String nombre = "";
         int id = 0;
         int fecha = 0;
-        System.out.println("Introduce el nombre del alumno a agregar:");
-        nombre = sc.nextLine();
-        System.out.println("Introduce la fecha de nacimiento del alumno a agregar:");
-        fecha = pedirEntero(sc);
-        System.out.println("Introduce la id del alumno a agregar:");
-        id = pedirEntero(sc);
-        sc.close();
-        if(comprobarId(id)){
-            if(alta){
-                darDeAlta(fecha, nombre, id, true);
+        while(id == 0 || fecha == 0){
+            System.out.println("Introduce el nombre del alumno a agregar:");
+            nombre = sc.nextLine();
+            System.out.println("Introduce la fecha de nacimiento del alumno a agregar (ddmmyyyy):");
+            fecha = pedirEntero(sc);
+            System.out.println(String.valueOf(fecha).length());
+            if(String.valueOf(fecha).length() > 8 || String.valueOf(fecha).length() < 6){
+                System.out.println("Fecha incorrecta!");
+                fecha = 0;
             }else{
-                alumnos.set(pos,new Alumno(fecha,nombre,id));
+                System.out.println("Introduce la id del alumno a agregar:");
+                id = pedirEntero(sc);
+                if(comprobarId(id)){
+                    if(alta){
+                        darDeAlta(fecha, nombre, id, true);
+                    }else{
+                        alumnos.set(pos,new Alumno(fecha,nombre,id));
+                    }
+                }else{
+                    System.out.println("ID repetida!");
+                    id = 0;
+                }
             }
-        }else{
-            System.out.println("ID repetida!");
         }
     }
 
