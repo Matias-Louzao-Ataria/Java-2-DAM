@@ -289,7 +289,7 @@ class Operaciones {
         return true;
     }
     
-    public int pedirEntero() {
+    public int pedirEntero() {//Overflow vuelve loco el menu
         int res = 0;
         try {
             res = sc.nextInt();
