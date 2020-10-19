@@ -3,7 +3,6 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,7 +67,11 @@ class Alumno {
     }
 
     public void setFecha(int fecha) {
-        this.fecha = fecha;
+        if(fecha < 0){
+            this.fecha = 11111111;
+        }else{
+            this.fecha = fecha;
+        }
     }
 
     public int getId() {
@@ -76,7 +79,11 @@ class Alumno {
     }
 
     public void setId(int id) {
-        this.id = id;
+        if(id < 0){
+            id = 1;
+        }else{
+            this.id = id;
+        }
     }
 
 }
@@ -292,6 +299,8 @@ class Operaciones {
             }
         } catch (NumberFormatException | InputMismatchException e) {
             System.out.println("Introduce un número válido.");
+            res = 0;
+            sc.reset();
         }
         return res;
     }
