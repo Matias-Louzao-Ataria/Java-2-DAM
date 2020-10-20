@@ -9,9 +9,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Operaciones o = new Operaciones();
-        o.mostarDepartamentos();
-        o.mostarPersonas();
+        Menu m = new Menu();
+        m.menu();
     }
 }
 
@@ -28,7 +27,8 @@ class Menu{
         String dni = "";
         Scanner sc = new Scanner(System.in);
         while(select != 7){
-            System.out.println("1.- Añadir persona.\n.2.- Añadir departamento.\n3.- Consultar personas.\n4.- Consultar departamentos.\n5.- Borrar persona.\n6.- Borrar departamento.\n7.- Salir.");
+            System.out.println("1.- Añadir persona.\n2.- Añadir departamento.\n3.- Consultar personas.\n4.- Consultar departamentos.\n5.- Borrar persona.\n6.- Borrar departamento.\n7.- Salir.");
+            select = o.pedirEntero(sc);
             switch (select) {
                 case 1:
                     entradaDeDatos(new Persona(),sc);
@@ -39,23 +39,27 @@ class Menu{
                     break;
                 
                 case 3:
-                    o.mostarPersonas();
+                    System.out.println("Introduzca el DNI de la persona a mostrar:");
+                    dni = sc.nextLine();
+                    o.borrarPersona(dni,true);
                     break;
                 
                 case 4:
-                    o.mostarDepartamentos();
+                    System.out.println("Introduzca el id del departamento a mostrar:");
+                    id = o.pedirEntero(sc);
+                    o.borrarDepart(id,true);
                     break;
                 
                 case 5:
                     System.out.println("Introduzca el DNI de la persona a eliminar:");
                     dni = sc.nextLine();
-                    o.borrarPersona(dni);
+                    o.borrarPersona(dni,false);
                     break;
 
                 case 6:
                     System.out.println("Introduzca el id del departamento a eliminar:");
                     id = o.pedirEntero(sc);
-                    o.borrarDepart(id);
+                    o.borrarDepart(id,false);
                     break;
                     
                 case 7:
@@ -95,15 +99,23 @@ class Menu{
         if(obj.getClass().equals(Depart.class)){
             System.out.println("Introduce el numero de empleados del departamento:");
             numempleados = o.pedirEntero(sc);
-            o.añadirDepartamento(nombre, apellidos, numempleados, edad);
+            if(o.comprobarID(edad)){
+                o.añadirDepartamento(nombre, apellidos, numempleados, edad);
+            }else{
+                System.out.println("ID repetida!");
+            }
         }else{
             System.out.println("Introduce el DNI de la persona:");
             s3 = sc.nextLine();
-            o.añadirPersona(nombre, apellidos,s3,edad);
+            if(o.comprobarDNI(s3)){
+                o.añadirPersona(nombre, apellidos, s3, edad);
+            }else{
+                System.out.println("DNI repetido!");
+            }
         }
-        sc.close();
         return true;
     }
+
 }
 
 class Operaciones{
@@ -111,7 +123,10 @@ class Operaciones{
     private File f = new File(home + sep + "guardado.dat");
     private ArrayList<Persona> personas = new ArrayList<Persona>();
     private ArrayList<Depart> departamentos = new ArrayList<Depart>();
-
+    
+    /**
+     *Se comprueba si existe archivo del que leer, si no existe se crea para poder escribirlo y si existe se lee. 
+     */
     public Operaciones(){
         try{
             if(f.exists() && f.length() > 0){
@@ -121,12 +136,18 @@ class Operaciones{
                     int x = input.readInt();
                     //System.out.println(x);
                     for(int i = 0;i < x;i++){
-                        departamentos.add((Depart) input.readObject());
+                        Depart d = (Depart)input.readObject();
+                        if(comprobarID(d.getId())){
+                            departamentos.add(d);
+                        }
                     }
                     int y = input.readInt();
                     //System.out.println(y);
                     for(int j = 0;j < y;j++){
-                        personas.add((Persona) input.readObject());
+                        Persona p = (Persona)input.readObject();
+                        if(comprobarDNI(p.getDni())){
+                            personas.add(p);
+                        }
                     }
                     input.close();
                     in.close();
@@ -143,6 +164,34 @@ class Operaciones{
         
     }
 
+    /**
+     * Comprueba que no existan DNI's repetidos.
+     * @param dni DNI a comprobar.
+     * @return Devuelve false si el DNI está duplicado y true si no.
+     */
+    public boolean comprobarDNI(String dni) {
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(dni)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Comprueba que no existan ID's repetidos.
+     * @param id ID a comprobar.
+     * @return Devuelve false si el ID está duplicado y true si no.
+     */
+    public boolean comprobarID(int id) {
+        for (Depart depart : departamentos) {
+            if(depart.getId() == id){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean añadirPersona(String nombre, String apellidos,String dni ,int edad) {
         personas.add(new Persona(nombre, apellidos,dni,edad));
         return true;
@@ -153,40 +202,49 @@ class Operaciones{
         return true;
     }
 
-    public void mostarDepartamentos(){//TODO hacer bien esto
-        //System.out.println(departamentos.size());
-        for (Depart depart : departamentos) {
-            System.out.println(depart.getId());
-        }
-    }
-
-    public void mostarPersonas(){//TODO hacer bien esto
-        //System.out.println(departamentos.size());
-        for (Persona persona : personas) {
-            System.out.println(persona.getEdad());
-        }
-    }
-
-    public boolean borrarPersona(String dni){
+    /**
+     * Borra personas o muestra personas.
+     * @param dni DNI de la persona con la cual se desea trabajar.
+     * @param echo Si es true se muestra por pantalla si no se borra.
+     * @return devuelve true si se ha borrado de forma exitosa.
+     */
+    public boolean borrarPersona(String dni,boolean echo){
         for (Persona persona : personas) {
             if(persona.getDni().equals(dni)){
-                personas.remove(persona);
+                if(echo){
+                    System.out.println("Nombre:"+persona.getNombre()+" Apellidos:"+persona.getApellidos()+" DNI:"+persona.getDni()+" Edad:"+ persona.getEdad() + " años.");
+                }else{
+                    personas.remove(persona);
+                }
                 return true;
             }
         }
         return false;
     }
 
-    public boolean borrarDepart(int id){
+    /**
+     * Borra o muestra departamentos.
+     * @param id ID del departamento con el cual se desea trabajar.
+     * @param echo Si es true se muestra por pantalla si no se borra.
+     * @return devuelve true si se ha borrado de forma exitosa.
+     */
+    public boolean borrarDepart(int id,boolean echo){
         for (Depart depart : departamentos){
             if(depart.getId() == id){
-                departamentos.remove(depart);
+                if (echo) {
+                    System.out.println("Nombre:"+depart.getNombre() + " Empresa:" + depart.getEmpresa() + " ID:"+depart.getId()+" Numero de empleados:"+depart.getNumempleados() + " empleados.");
+                } else {
+                    departamentos.remove(depart);
+                }
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Guarda en un archivo los objetos.
+     */
     public boolean guardar() {
         try {
             FileOutputStream out = new FileOutputStream(f, true);
@@ -209,6 +267,11 @@ class Operaciones{
         return true;
     }
 
+    /**
+     * Proporciona una forma segura de pedir un entero sin preocuparse por las excepciones.
+     * @param sc Scanner con el cual se leen los datos del teclado.
+     * @return Devuelve 0 se no se ha introducido un dato valido, en caso contrario devuelve el valor.
+     */
     public int pedirEntero(Scanner sc) {
         int res = 0;
         try {
