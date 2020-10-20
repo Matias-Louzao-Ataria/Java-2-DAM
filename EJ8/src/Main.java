@@ -8,7 +8,7 @@ public class Main {
     ya que al acceder al archivo se lee una cantidad determinada de caracteres al mismo tiempo y no solo uno.*/
     public static void main(String[] args) throws Exception {
         String home = System.getProperty("user.home"),sep = System.getProperty("file.separator");
-        File in = new File(home+sep+"alumnos.dat"),out = new File(home+sep+"copia.jpg");
+        File in = new File("cc.jpg"),out = new File(home+sep+"copia.jpg");
         interpreter interpretador = new interpreter();
         long t1 = System.currentTimeMillis(),t1f = 0,t2 = 0,t2f = 0;
         interpretador.copiaSinBuffer(in,out);
