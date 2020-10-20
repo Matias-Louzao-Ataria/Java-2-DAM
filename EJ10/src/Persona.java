@@ -1,19 +1,18 @@
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 public class Persona implements Serializable {//TODO implementar serializable
-    private String nombre,apellidos;
+    private String nombre,apellidos,dni;
     private int edad;
 
     public Persona(){
 
     }
 
-    public Persona(String nombre,String apellidos,int edad) {
+    public Persona(String nombre,String apellidos,String dni,int edad) {
         this.setNombre(nombre);
         this.setApellidos(apellidos);
         this.setEdad(edad);
+        this.setDni(dni);
     }
 
     public String getNombre() {
@@ -52,11 +51,23 @@ public class Persona implements Serializable {//TODO implementar serializable
         System.out.println(this.nombre+" está comiendo!");
     }
 
-    private void writeObject(ObjectOutputStream out) {
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        if(dni.length() <= 0){
+            dni = "12345678A";
+        }else{
+            this.dni = dni;
+        }
+    }
+
+    /*private void writeObject(ObjectOutputStream out) {
 
     }
 
     private void readObject(ObjectInputStream in) {
 
-    }
+    }*/
 }

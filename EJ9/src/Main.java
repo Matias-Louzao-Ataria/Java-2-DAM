@@ -105,11 +105,12 @@ class Operaciones {
                         Alumno actual = new Alumno(input.readInt(), input.readUTF(), input.readInt());
                         alumnos.add(actual);
                     }
-                } catch (EOFException e) {
-                    //System.out.println("Fin del archivo!");
+                } catch (EOFException | NumberFormatException | IOException e) {
+                    System.out.println(e.getLocalizedMessage());
                 }
                 input.close();
                 in.close();
+                f.delete();
             } else {
                 f.createNewFile();
             }
@@ -223,7 +224,6 @@ class Operaciones {
     }
 
     public void guardar() {
-        f.delete();
         try(FileOutputStream out = new FileOutputStream(f,true)){ 
             DataOutputStream output = new DataOutputStream(out);
             for (Alumno alumno : alumnos) {

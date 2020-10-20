@@ -1,6 +1,3 @@
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 public class Depart implements Serializable{// TODO implementar serializable
@@ -62,7 +59,7 @@ public class Depart implements Serializable{// TODO implementar serializable
         System.out.println(this.nombre+" tiene "+this.numempleados+" empleados!");
     }
 
-    private void writeObject(ObjectOutputStream out){
+    /*private void writeObject(ObjectOutputStream out){
 
     }
 
@@ -72,6 +69,6 @@ public class Depart implements Serializable{// TODO implementar serializable
 
     private void readObjectNoData() throws ObjectStreamException{
 
-    }
+    }*/
 
 }

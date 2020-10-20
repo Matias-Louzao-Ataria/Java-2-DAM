@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -48,8 +47,21 @@ class Operador {
     }
 
     private void contar(File f) {
-        int x = 0,lineas = 0,palabras = 0;
-        try(Scanner sc = new Scanner(f)) {
+        int lineas = 0,palabras = 0;
+        try(Scanner sc = new Scanner(f)){
+            String actual = "";
+            while(sc.hasNextLine()){
+                actual = sc.nextLine();
+                String[] a = actual.split("\s");
+                for (String string : a) {
+                    if(string.trim().replace("\s","").length() > 0){
+                        palabras++;
+                    }
+                }
+                lineas++;
+            }
+        
+        /*try(Scanner sc = new Scanner(f)) {
             String actual = "",linea = "";
             while(sc.hasNextLine()){
                 lineas++;
@@ -61,7 +73,7 @@ class Operador {
                         palabras++;
                     }
                 }
-            }
+            }*/
             System.out.println("El archivo tiene: "+lineas+" lineas y "+palabras+" palabras.");
             // int x = 0,lineas = 0,palabras = 0;
             // while((x = reader.read()) != -1){
