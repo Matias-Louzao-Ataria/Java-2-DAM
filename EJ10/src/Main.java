@@ -153,14 +153,14 @@ class Operaciones{
         return true;
     }
 
-    public void mostarDepartamentos(){
+    public void mostarDepartamentos(){//TODO hacer bien esto
         //System.out.println(departamentos.size());
         for (Depart depart : departamentos) {
             System.out.println(depart.getId());
         }
     }
 
-    public void mostarPersonas(){
+    public void mostarPersonas(){//TODO hacer bien esto
         //System.out.println(departamentos.size());
         for (Persona persona : personas) {
             System.out.println(persona.getEdad());
