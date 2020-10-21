@@ -1,3 +1,4 @@
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         Menu m = new Menu();
         m.menu();
     }
@@ -41,23 +42,31 @@ class Menu{
                 case 3:
                     System.out.println("Introduzca el DNI de la persona a mostrar:");
                     dni = this.sc.nextLine();
-                    if(!o.borrarPersona(dni,true)){
-                        System.out.println("No existe esa persona!");
+                    Persona persona = o.conseguirPersona(dni);
+                    
+                    if(persona != null){
+                        System.out.println("Nombre:" + persona.getNombre() + " Apellidos:" + persona.getApellidos()+ " DNI:" + persona.getDni() + " Edad:" + persona.getEdad() + " años.");
+                    }else{
+                        System.out.println("Esa persona no está en la lista!");
                     }
                     break;
                 
                 case 4:
                     System.out.println("Introduzca el id del departamento a mostrar:");
                     id = pedirEntero();
-                    if(!o.borrarDepart(id,true)){
-                        System.out.println("No existe ese departamento!");
+                    Depart depart = o.conseguirDepart(id);
+                    if(depart != null){
+                        System.out.println("Nombre:" + depart.getNombre() + " Empresa:" + depart.getEmpresa() + " ID:" + depart.getId()+ " Numero de empleados:" + depart.getNumempleados() + " empleados.");
+                    }else{
+                        System.out.println("Ese departamento no está en la lista!");
+
                     }
                     break;
                 
                 case 5:
                     System.out.println("Introduzca el DNI de la persona a borrar:");
                     dni = this.sc.nextLine();
-                    if(o.borrarPersona(dni,false)){
+                    if(o.borrarPersona(dni)){
                         System.out.println("Persona borrada correctamente!");
                     }else{
                         System.out.println("Persona no borrada!");
@@ -67,7 +76,7 @@ class Menu{
                 case 6:
                     System.out.println("Introduzca el id del departamento a eliminar:");
                     id = pedirEntero();
-                    if(o.borrarDepart(id,false)){
+                    if(o.borrarDepart(id)){
                         System.out.println("Departamento borrado correctamente!");
                     }else{
                         System.out.println("Departamento no borrado!");
@@ -177,9 +186,11 @@ class Operaciones{
                         }
                     }
                     f.delete();
+                }catch (EOFException e) {
+                    //System.err.println("Se han cargado los datos!");
                 }catch(IOException | ClassNotFoundException | NumberFormatException e){
-                    //System.err.println(e.getLocalizedMessage());
-                    System.out.println();
+                    System.err.println(e.getLocalizedMessage());
+                    System.err.println("Posible archivo corrupto");
                 }
             }else{ 
                 f.createNewFile(); 
@@ -229,19 +240,14 @@ class Operaciones{
     }
 
     /**
-     * Borra personas o muestra personas.
+     * Borra personas.
      * @param dni DNI de la persona con la cual se desea trabajar.
-     * @param echo Si es true se muestra por pantalla si no se borra.
      * @return devuelve true si se ha borrado de forma exitosa.
      */
-    public boolean borrarPersona(String dni,boolean echo){
+    public boolean borrarPersona(String dni){
         for (Persona persona : personas) {
             if(persona.getDni().equals(dni)){
-                if(echo){
-                    System.out.println("Nombre:"+persona.getNombre()+" Apellidos:"+persona.getApellidos()+" DNI:"+persona.getDni()+" Edad:"+ persona.getEdad() + " años.");
-                }else{
-                    personas.remove(persona);
-                }
+                personas.remove(persona);
                 return true;
             }
         }
@@ -249,23 +255,41 @@ class Operaciones{
     }
 
     /**
-     * Borra o muestra departamentos.
+     * Devuelve la persona solicitada a partir de su DNI.
+     * @param dni DNI de la persona solicitada.
+     * @return  null si la persona solicitada no está en la lista o la persona solicitada.
+     */
+    public Persona conseguirPersona(String dni){
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(dni)) {
+                return persona;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Borra departamentos.
      * @param id ID del departamento con el cual se desea trabajar.
-     * @param echo Si es true se muestra por pantalla si no se borra.
      * @return devuelve true si se ha borrado de forma exitosa.
      */
-    public boolean borrarDepart(int id,boolean echo){
+    public boolean borrarDepart(int id){
         for (Depart depart : departamentos){
             if(depart.getId() == id){
-                if (echo) {
-                    System.out.println("Nombre:"+depart.getNombre() + " Empresa:" + depart.getEmpresa() + " ID:"+depart.getId()+" Numero de empleados:"+depart.getNumempleados() + " empleados.");
-                } else {
-                    departamentos.remove(depart);
-                }
+                departamentos.remove(depart);
                 return true;
             }
         }
         return false;
+    }
+
+    public Depart conseguirDepart(int id){
+        for (Depart depart : departamentos) {
+            if (depart.getId() == id) {
+                return depart;
+            }
+        }
+        return null;
     }
 
     /**

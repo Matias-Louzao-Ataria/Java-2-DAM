@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class Depart implements Serializable{// TODO implementar serializable
+public class Depart implements Serializable{
     private String nombre,empresa;
     private int id,numempleados;
 
@@ -19,25 +19,48 @@ public class Depart implements Serializable{// TODO implementar serializable
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    /**
+     * Establece el valor de la variable nombre.
+     * @param nombre Valor de nombre.
+     * @throws IllegalArgumentException Si nombre es cadena vacia.
+     */
+    public void setNombre(String nombre) throws IllegalArgumentException{
+        if(nombre.length() <= 0){
+            throw new IllegalArgumentException();
+        }else{
+            this.nombre = nombre;
+        }
     }
 
     public String getEmpresa() {
         return empresa;
     }
 
-    public void setEmpresa(String empresa) {
-        this.empresa = empresa;
+    /**
+     * Establece el valor de la variable empresa.
+     * @param empresa Valor de empresa.
+     * @throws IllegalArgumentException Si empresa es cadena vacia.
+     */
+    public void setEmpresa(String empresa) throws IllegalArgumentException {
+        if (empresa.length() <= 0) {
+            throw new IllegalArgumentException();
+        } else {
+            this.empresa = empresa;
+        }
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    /**
+     * Establece el valor de la propiedad id.
+     * @param id Valor de id.
+     * @throws NumberFormatException Si id es negativa.
+     */
+    public void setId(int id) throws NumberFormatException{
         if(id < 0){
-            id = 0;
+            throw new NumberFormatException();
         }else{
             this.id = id;
         }
@@ -47,9 +70,14 @@ public class Depart implements Serializable{// TODO implementar serializable
         return numempleados;
     }
 
-    public void setNumempleados(int numempleados) {
+    /**
+     * Establece el número de empleados.
+     * @param numempleados Número de empleados.
+     * @throws NumberFormatException Si el número de empleados es negativo.
+     */
+    public void setNumempleados(int numempleados) throws NumberFormatException{
         if (numempleados < 0) {
-            numempleados = 0;
+            throw new NumberFormatException();
         } else {
             this.numempleados = numempleados;
         }
@@ -58,17 +86,4 @@ public class Depart implements Serializable{// TODO implementar serializable
     public void verEmpleados(){
         System.out.println(this.nombre+" tiene "+this.numempleados+" empleados!");
     }
-
-    /*private void writeObject(ObjectOutputStream out){
-
-    }
-
-    private void readObject(ObjectInputStream in){
-
-    }
-
-    private void readObjectNoData() throws ObjectStreamException{
-
-    }*/
-
 }
