@@ -130,11 +130,8 @@ class Operaciones{
     public Operaciones(){
         try{
             if(f.exists() && f.length() > 0){
-                try{
-                    FileInputStream in = new FileInputStream(f);
-                    ObjectInputStream input = new ObjectInputStream(in);
+                try(FileInputStream in = new FileInputStream(f);ObjectInputStream input = new ObjectInputStream(in);){
                     int x = input.readInt();
-                    //System.out.println(x);
                     for(int i = 0;i < x;i++){
                         Depart d = (Depart)input.readObject();
                         if(comprobarID(d.getId())){
@@ -142,18 +139,16 @@ class Operaciones{
                         }
                     }
                     int y = input.readInt();
-                    //System.out.println(y);
                     for(int j = 0;j < y;j++){
                         Persona p = (Persona)input.readObject();
                         if(comprobarDNI(p.getDni())){
                             personas.add(p);
                         }
                     }
-                    input.close();
-                    in.close();
                     f.delete();
                 }catch(IOException | ClassNotFoundException | NumberFormatException e){
                     //System.err.println(e.getLocalizedMessage());
+                    System.out.println();
                 }
             }else{ 
                 f.createNewFile(); 
@@ -246,9 +241,7 @@ class Operaciones{
      * Guarda en un archivo los objetos.
      */
     public boolean guardar() {
-        try {
-            FileOutputStream out = new FileOutputStream(f, true);
-            ObjectOutputStream output = new ObjectOutputStream(out);
+        try(FileOutputStream out = new FileOutputStream(f, true);ObjectOutputStream output = new ObjectOutputStream(out);){
             output.writeInt(departamentos.size());
             for (Depart depart : departamentos) {
                 output.writeObject(depart);
@@ -258,9 +251,6 @@ class Operaciones{
             for (Persona persona : personas) {
                 output.writeObject(persona);
             }
-
-            output.close();
-            out.close();
         } catch (IOException e) {
             return false;
         }

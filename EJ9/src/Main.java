@@ -1,6 +1,5 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -96,20 +95,16 @@ class Operaciones {
 
     public Operaciones(Scanner sc) {
         this.sc = sc;
-        try {
+        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);){
             if (f.exists() && f.length() > 0) {
-                FileInputStream in = new FileInputStream(f);
-                DataInputStream input = new DataInputStream(in);
                 try {
                     while (true) {
                         Alumno actual = new Alumno(input.readInt(), input.readUTF(), input.readInt());
                         alumnos.add(actual);
                     }
-                } catch (EOFException | NumberFormatException | IOException e) {
+                } catch (NumberFormatException | IOException e) {
                     System.out.println(e.getLocalizedMessage());
                 }
-                input.close();
-                in.close();
                 f.delete();
             } else {
                 f.createNewFile();
@@ -224,14 +219,12 @@ class Operaciones {
     }
 
     public void guardar() {
-        try(FileOutputStream out = new FileOutputStream(f,true)){ 
-            DataOutputStream output = new DataOutputStream(out);
+        try(FileOutputStream out = new FileOutputStream(f,true);DataOutputStream output = new DataOutputStream(out);){ 
             for (Alumno alumno : alumnos) {
                 output.writeInt(alumno.getFecha());
                 output.writeUTF(alumno.getNombre());
                 output.writeInt(alumno.getId());
             }
-            output.close();
         } catch (IOException e) {
             System.err.println(e.getLocalizedMessage());
         }
