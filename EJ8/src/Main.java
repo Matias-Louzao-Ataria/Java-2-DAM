@@ -23,27 +23,23 @@ public class Main {
 
 class interpreter{
     public void copiaSinBuffer(File in, File out){
-        try(FileInputStream input = new FileInputStream(in)){
-            FileOutputStream output = new FileOutputStream(out);
+        try(FileInputStream input = new FileInputStream(in);FileOutputStream output = new FileOutputStream(out)){
             int i;
             while((i = input.read()) != -1){
                 output.write(i);
             }
-            output.close();
         }catch(IOException e){            
             System.err.println(e.getLocalizedMessage());
         }
     }
 
     public void copiaConBuffer(File in, File out){
-        try(FileInputStream input = new FileInputStream(in)){
-            FileOutputStream output = new FileOutputStream(out);
+        try(FileInputStream input = new FileInputStream(in);FileOutputStream output = new FileOutputStream(out)){
             int i;
             byte[] buffer = new byte[75];
             while((i = input.read(buffer))!= -1){
                 output.write(buffer,0,i);
             }
-            output.close();
         }catch(IOException e){
             System.err.println(e.getLocalizedMessage());
         }
