@@ -79,7 +79,7 @@ class Alumno {
 
     public void setId(int id) {
         if(id < 0){
-            id = 1;
+            this.id = 1;
         }else{
             this.id = id;
         }
@@ -198,7 +198,7 @@ class Operaciones {
 
     public void borrarAlumno(int id) {
         boolean echo = false;
-        for (Alumno alumno : alumnos) {
+        for (Alumno alumno : alumnos) {//for normal invertido
             if (alumno.getId() == id) {
                 alumnos.remove(alumno);
                 echo = true;

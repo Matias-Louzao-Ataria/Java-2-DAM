@@ -17,6 +17,7 @@ public class Main {
 class Menu{ 
 
     private Operaciones o = new Operaciones();
+    Scanner sc = new Scanner(System.in);
 
     public Menu(){
         
@@ -25,41 +26,52 @@ class Menu{
     public void menu(){
         int select = 0,id = 0;
         String dni = "";
-        Scanner sc = new Scanner(System.in);
         while(select != 7){
             System.out.println("1.- Añadir persona.\n2.- Añadir departamento.\n3.- Consultar personas.\n4.- Consultar departamentos.\n5.- Borrar persona.\n6.- Borrar departamento.\n7.- Salir.");
-            select = o.pedirEntero(sc);
+            select = pedirEntero();
             switch (select) {
                 case 1:
-                    entradaDeDatos(new Persona(),sc);
+                    entradaDeDatos(new Persona());
                     break;
 
                 case 2:
-                    entradaDeDatos(new Depart(),sc);
+                    entradaDeDatos(new Depart());
                     break;
                 
                 case 3:
                     System.out.println("Introduzca el DNI de la persona a mostrar:");
-                    dni = sc.nextLine();
-                    o.borrarPersona(dni,true);
+                    dni = this.sc.nextLine();
+                    if(!o.borrarPersona(dni,true)){
+                        System.out.println("No existe esa persona!");
+                    }
                     break;
                 
                 case 4:
                     System.out.println("Introduzca el id del departamento a mostrar:");
-                    id = o.pedirEntero(sc);
-                    o.borrarDepart(id,true);
+                    id = pedirEntero();
+                    if(!o.borrarDepart(id,true)){
+                        System.out.println("No existe ese departamento!");
+                    }
                     break;
                 
                 case 5:
-                    System.out.println("Introduzca el DNI de la persona a eliminar:");
-                    dni = sc.nextLine();
-                    o.borrarPersona(dni,false);
+                    System.out.println("Introduzca el DNI de la persona a borrar:");
+                    dni = this.sc.nextLine();
+                    if(o.borrarPersona(dni,false)){
+                        System.out.println("Persona borrada correctamente!");
+                    }else{
+                        System.out.println("Persona no borrada!");
+                    }
                     break;
 
                 case 6:
                     System.out.println("Introduzca el id del departamento a eliminar:");
-                    id = o.pedirEntero(sc);
-                    o.borrarDepart(id,false);
+                    id = pedirEntero();
+                    if(o.borrarDepart(id,false)){
+                        System.out.println("Departamento borrado correctamente!");
+                    }else{
+                        System.out.println("Departamento no borrado!");
+                    }
                     break;
                     
                 case 7:
@@ -70,11 +82,11 @@ class Menu{
                     break;
             }
         }
-        sc.close();
+        this.sc.close();
         o.guardar();
     }
 
-    public boolean entradaDeDatos(Object obj,Scanner sc){
+    public void entradaDeDatos(Object obj){
         String objetivo = "",s2 = "",s3 = "";
         String nombre = "",apellidos = "";
         int edad = 0,numempleados = 0;
@@ -87,18 +99,18 @@ class Menu{
             s2 = "la empersa";
             s3 = "el id";
         }else{  
-            return false;
+            System.out.println("Objeto no soportado!");
         }
 
         System.out.println("Introduce el nombre de "+objetivo+":");
-        nombre = sc.nextLine();
+        nombre = this.sc.nextLine();
         System.out.println("Introduce "+s2+" de "+objetivo+":");
-        apellidos = sc.nextLine();
+        apellidos = this.sc.nextLine();
         System.out.println("Intruduce "+s3+" de "+objetivo+":");
-        edad = o.pedirEntero(sc);
+        edad = pedirEntero();
         if(obj.getClass().equals(Depart.class)){
             System.out.println("Introduce el numero de empleados del departamento:");
-            numempleados = o.pedirEntero(sc);
+            numempleados = pedirEntero();
             if(o.comprobarID(edad)){
                 o.añadirDepartamento(nombre, apellidos, numempleados, edad);
             }else{
@@ -106,14 +118,33 @@ class Menu{
             }
         }else{
             System.out.println("Introduce el DNI de la persona:");
-            s3 = sc.nextLine();
+            s3 = this.sc.nextLine();
             if(o.comprobarDNI(s3)){
                 o.añadirPersona(nombre, apellidos, s3, edad);
             }else{
                 System.out.println("DNI repetido!");
             }
         }
-        return true;
+    }
+
+    /**
+     * Proporciona una forma segura de pedir un entero sin preocuparse por las excepciones.
+     * @return Devuelve 0 se no se ha introducido un dato valido, en caso contrario devuelve el valor.
+     */
+    public int pedirEntero() {
+        int res = 0;
+        try {
+            res = this.sc.nextInt();
+            this.sc.nextLine();
+            if (res < 0) {
+                res = 0;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Introduce un número válido.");
+            res = 0;
+            this.sc.reset();
+        }
+        return res;
     }
 
 }
@@ -255,26 +286,5 @@ class Operaciones{
             return false;
         }
         return true;
-    }
-
-    /**
-     * Proporciona una forma segura de pedir un entero sin preocuparse por las excepciones.
-     * @param sc Scanner con el cual se leen los datos del teclado.
-     * @return Devuelve 0 se no se ha introducido un dato valido, en caso contrario devuelve el valor.
-     */
-    public int pedirEntero(Scanner sc) {
-        int res = 0;
-        try {
-            res = sc.nextInt();
-            sc.nextLine();
-            if (res < 0) {
-                res = 0;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println("Introduce un número válido.");
-            res = 0;
-            sc.reset();
-        }
-        return res;
     }
 }
