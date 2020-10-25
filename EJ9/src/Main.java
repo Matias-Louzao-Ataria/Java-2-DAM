@@ -11,19 +11,19 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         /*
-         * String home = System.getProperty("user.home"), sep =
-         * System.getProperty("file.separator"); File f = new File(home + sep +
-         * "alumnos.dat");
-         * 
-         * if(!f.exists()){ f.createNewFile(); }
-         * 
-         * FileOutputStream out = new FileOutputStream(f,true); DataOutputStream output
-         * = new DataOutputStream(out); output.writeUTF("|"); output.writeInt(2);
-         * output.writeInt(3); output.writeDouble(4.2); output.close(); out.close();
-         * FileInputStream in = new FileInputStream(f); DataInputStream input = new
-         * DataInputStream(in); System.out.println(input.readUTF());
-         * System.out.println(input.readInt()); System.out.println(input.readInt());
-         * System.out.println(input.readDouble()); input.close(); in.close();
+         String home = System.getProperty("user.home"), sep =
+         System.getProperty("file.separator"); File f = new File(home + sep +
+         "alumnos.dat");
+         
+         if(!f.exists()){ f.createNewFile(); }
+         
+         FileOutputStream out = new FileOutputStream(f,true); DataOutputStream output
+         = new DataOutputStream(out); output.writeUTF("|"); output.writeInt(2);
+         output.writeInt(3); output.writeDouble(4.2); output.close(); out.close();
+         FileInputStream in = new FileInputStream(f); DataInputStream input = new
+         DataInputStream(in); System.out.println(input.readUTF());
+         System.out.println(input.readInt()); System.out.println(input.readInt());
+         System.out.println(input.readDouble()); input.close(); in.close();
          */
 
         Scanner sc = new Scanner(System.in);
@@ -293,7 +293,6 @@ class Operaciones {
         } catch (NumberFormatException | InputMismatchException e) {
             System.out.println("Introduce un número válido.");
             res = 0;
-            sc.reset();
         }
         return res;
     }

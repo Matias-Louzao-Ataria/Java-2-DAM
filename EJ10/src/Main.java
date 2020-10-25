@@ -15,7 +15,7 @@ public class Main {
     }
 }
 
-class Menu{ 
+class Menu{
 
     private Operaciones o = new Operaciones();
     Scanner sc = new Scanner(System.in);
