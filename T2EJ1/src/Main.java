@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-
-import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -75,7 +73,7 @@ class Dom{
                     }
                 }
             }
-            coincide = false;
+            coincide = false;//Aquí se cambia de película
         }
         return res; 
     }
