@@ -53,9 +53,9 @@ class Alumno {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        if (nombre.length() <= 0) {
-            this.nombre = "a";
+    public void setNombre(String nombre) throws IllegalArgumentException {
+        if (nombre == null || nombre.length() <= 0) {
+            throw new IllegalArgumentException();
         } else {
             this.nombre = nombre;
         }
@@ -65,9 +65,9 @@ class Alumno {
         return fecha;
     }
 
-    public void setFecha(int fecha) {
+    public void setFecha(int fecha) throws IllegalArgumentException{
         if(fecha < 0){
-            this.fecha = 11111111;
+            throw new IllegalArgumentException();
         }else{
             this.fecha = fecha;
         }
@@ -77,9 +77,9 @@ class Alumno {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) throws IllegalArgumentException{
         if(id < 0){
-            this.id = 1;
+            throw new IllegalArgumentException();
         }else{
             this.id = id;
         }
@@ -198,12 +198,13 @@ class Operaciones {
 
     public void borrarAlumno(int id) {
         boolean echo = false;
-        for (Alumno alumno : alumnos) {//for normal invertido
-            if (alumno.getId() == id) {
-                alumnos.remove(alumno);
+        for(int i = alumnos.size(); i > 0;i--){
+            if(alumnos.get(i).getId() == id){
+                alumnos.remove(alumnos.get(i));
                 echo = true;
             }
         }
+
         if (!echo) {
             System.out.println("No se encuentra el alumno!");
         } else {
@@ -282,7 +283,7 @@ class Operaciones {
         return true;
     }
     
-    public int pedirEntero() {//Overflow vuelve loco el menu
+    public int pedirEntero() {
         int res = 0;
         try {
             res = sc.nextInt();

@@ -15,7 +15,15 @@ public class Main {
         t1f = System.currentTimeMillis();
         System.err.println("Tiempo de ejecución: "+(t1f-t1)+"ms");
         t2 = System.currentTimeMillis();
-        interpretador.copiaConBuffer(in, new File(home+sep+"copia2.jpg"));
+        interpretador.copiaConBuffer(in, new File(home+sep+"copia2.jpg"),100);
+        t2f = System.currentTimeMillis();
+        System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
+        t2 = System.currentTimeMillis();
+        interpretador.copiaConBuffer(in, new File(home + sep + "copia2.jpg"), 1000);
+        t2f = System.currentTimeMillis();
+        System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
+        t2 = System.currentTimeMillis();
+        interpretador.copiaConBuffer(in, new File(home + sep + "copia2.jpg"), 10000);
         t2f = System.currentTimeMillis();
         System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
     }
@@ -33,10 +41,10 @@ class interpreter{
         }
     }
 
-    public void copiaConBuffer(File in, File out){
+    public void copiaConBuffer(File in, File out,int tamaño){
         try(FileInputStream input = new FileInputStream(in);FileOutputStream output = new FileOutputStream(out)){
             int i;
-            byte[] buffer = new byte[75];
+            byte[] buffer = new byte[tamaño];
             while((i = input.read(buffer))!= -1){
                 output.write(buffer,0,i);
             }
