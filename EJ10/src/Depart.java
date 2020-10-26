@@ -59,7 +59,7 @@ public class Depart implements Serializable{
      * @throws NumberFormatException Si id es negativa.
      */
     public void setId(int id) throws NumberFormatException{
-        if(id == null || id < 0){
+        if(id < 0){
             throw new NumberFormatException();
         }else{
             this.id = id;
@@ -76,7 +76,7 @@ public class Depart implements Serializable{
      * @throws NumberFormatException Si el número de empleados es negativo.
      */
     public void setNumempleados(int numempleados) throws NumberFormatException{
-        if (nunempleados ==null || numempleados < 0) {
+        if (numempleados < 0) {
             throw new NumberFormatException();
         } else {
             this.numempleados = numempleados;
