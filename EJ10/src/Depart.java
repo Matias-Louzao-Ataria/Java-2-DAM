@@ -42,7 +42,7 @@ public class Depart implements Serializable{
      * @throws IllegalArgumentException Si empresa es cadena vacia.
      */
     public void setEmpresa(String empresa) throws IllegalArgumentException {
-        if (empresa.length() <= 0) {
+        if (empresa == null || empresa.length() <= 0) {
             throw new IllegalArgumentException();
         } else {
             this.empresa = empresa;
@@ -59,7 +59,7 @@ public class Depart implements Serializable{
      * @throws NumberFormatException Si id es negativa.
      */
     public void setId(int id) throws NumberFormatException{
-        if(id < 0){
+        if(id == null || id < 0){
             throw new NumberFormatException();
         }else{
             this.id = id;
@@ -76,7 +76,7 @@ public class Depart implements Serializable{
      * @throws NumberFormatException Si el número de empleados es negativo.
      */
     public void setNumempleados(int numempleados) throws NumberFormatException{
-        if (numempleados < 0) {
+        if (nunempleados ==null || numempleados < 0) {
             throw new NumberFormatException();
         } else {
             this.numempleados = numempleados;
