@@ -25,7 +25,7 @@ public class Persona implements Serializable {
      * @throws IllegalArgumentException Si nombre es cadena vacia.
      */
     public void setNombre(String nombre) throws IllegalArgumentException {
-        if (nombre.length() <= 0) {
+        if (nombre == null || nombre.length() <= 0) {
             throw new IllegalArgumentException();
         } else {
             this.nombre = nombre;
@@ -42,7 +42,7 @@ public class Persona implements Serializable {
      * @throws IllegalArgumentException Si apellidos es cadena vacia.
      */
     public void setApellidos(String apellidos) throws IllegalArgumentException {
-        if (apellidos.length() <= 0) {
+        if (apellidos == null || apellidos.length() <= 0) {
             throw new IllegalArgumentException();
         } else {
             this.apellidos = apellidos;

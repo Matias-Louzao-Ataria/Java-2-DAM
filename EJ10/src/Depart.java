@@ -25,7 +25,7 @@ public class Depart implements Serializable{
      * @throws IllegalArgumentException Si nombre es cadena vacia.
      */
     public void setNombre(String nombre) throws IllegalArgumentException{
-        if(nombre.length() <= 0){
+        if(nombre == null || nombre.length() <= 0){
             throw new IllegalArgumentException();
         }else{
             this.nombre = nombre;
@@ -42,7 +42,7 @@ public class Depart implements Serializable{
      * @throws IllegalArgumentException Si empresa es cadena vacia.
      */
     public void setEmpresa(String empresa) throws IllegalArgumentException {
-        if (empresa.length() <= 0) {
+        if (empresa == null || empresa.length() <= 0) {
             throw new IllegalArgumentException();
         } else {
             this.empresa = empresa;

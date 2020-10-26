@@ -185,7 +185,6 @@ class Operaciones{
                             personas.add(p);
                         }
                     }
-                    f.delete();
                 }catch (EOFException e) {
                     //System.err.println("Se han cargado los datos!");
                 }catch(IOException | ClassNotFoundException | NumberFormatException e){
@@ -296,7 +295,7 @@ class Operaciones{
      * Guarda en un archivo los objetos.
      */
     public boolean guardar() {
-        try(FileOutputStream out = new FileOutputStream(f, true);ObjectOutputStream output = new ObjectOutputStream(out);){
+        try(FileOutputStream out = new FileOutputStream(f, false);ObjectOutputStream output = new ObjectOutputStream(out);){
             output.writeInt(departamentos.size());
             for (Depart depart : departamentos) {
                 output.writeObject(depart);
