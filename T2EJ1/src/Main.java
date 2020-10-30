@@ -10,12 +10,16 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Dom d = new Dom();
         Document arbol = d.crearArbol();
+        int autores = 1;
+        String peliculas = "";
         ArrayList<String> titulos = d.mostrarTitulos(arbol);
         for (String string : titulos) {
             System.out.println(string);
             System.out.println(d.mostrarAutores(arbol, string));
             System.out.println();
         }
+        peliculas = d.peliculasDirectores(d.crearArbol(), autores);
+        System.out.println("Películas con "+autores+" director(es):\n"+peliculas);
     }
 }
 
@@ -79,6 +83,35 @@ class Dom{
             coincide = false;
         }
         return res; 
+    }
+
+    public String peliculasDirectores(Document doc,int numDirectores){
+        Node filmoteca = doc.getFirstChild();
+        NodeList peliculas = filmoteca.getChildNodes();
+        int cont = 0;
+        String res = "",titulo = "";
+
+        for (int i = 0; i < peliculas.getLength(); i++) {
+            Node pelicula = peliculas.item(i);
+            if(pelicula.getNodeType() == Node.ELEMENT_NODE){
+                NodeList datosPelicula = pelicula.getChildNodes();
+                for(int j = 0;j < datosPelicula.getLength();j++){
+                    Node dato = datosPelicula.item(j);
+                    if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName() == "director"){
+                        cont++;
+                    }
+                    if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName() == "titulo"){
+                        titulo = dato.getFirstChild().getNodeValue();
+                    }
+                }
+            }
+            if(cont >= numDirectores){
+                res += titulo+"\n";
+            }
+            titulo = "";
+            cont = 0;   
+        }
+        return res;
     }
 
 }
