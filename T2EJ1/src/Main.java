@@ -34,8 +34,8 @@ public class Main {
             System.out.println(genero);
         }
         
-        d.añadirAtributo(arbol, "Dune", "prueba", "prueba");
-        
+        //d.añadirAtributo(arbol, "Dune", "prueba", "prueba");
+        //d.eliminarAtributo(arbol, "Dune", "genero");
         d.grabaDOM(arbol, new FileOutputStream(new File("a.xml")));
 
     }
@@ -166,6 +166,28 @@ class Dom{
 
                             } else {
                                 ((Element) pelicula).setAttribute(nombre, valor);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void eliminarAtributo(Document doc, String titulo, String nombre) {
+        Node filmoteca = doc.getFirstChild();
+        NodeList peliculas = filmoteca.getChildNodes();
+
+        for (int i = 0; i < peliculas.getLength(); i++) {
+            Node pelicula = peliculas.item(i);
+            if (pelicula.getNodeType() == Node.ELEMENT_NODE) {
+                NodeList datosPelicula = pelicula.getChildNodes();
+                for (int j = 0; j < datosPelicula.getLength(); j++) {
+                    Node dato = datosPelicula.item(j);
+                    if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")) {
+                        if (dato.getFirstChild().getNodeValue().equals(titulo)) {
+                            if (((Element) pelicula).hasAttribute(nombre)) {
+                                ((Element)pelicula).removeAttribute(nombre);
                             }
                         }
                     }
