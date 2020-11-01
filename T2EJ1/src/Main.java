@@ -1,4 +1,7 @@
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -12,7 +15,9 @@ public class Main {
         Document arbol = d.crearArbol();
         int autores = 1;
         String peliculas = "";
+        ArrayList<String> generos = d.enumeraGeneros(arbol);
         ArrayList<String> titulos = d.mostrarTitulos(arbol);
+
         for (String string : titulos) {
             System.out.println(string);
             System.out.println(d.mostrarAutores(arbol, string));
@@ -20,6 +25,12 @@ public class Main {
         }
         peliculas = d.peliculasDirectores(d.crearArbol(), autores);
         System.out.println("Películas con "+autores+" director(es):\n"+peliculas);
+
+        System.out.printf("Existen: %d generos y son:\n",generos.size());
+        for (String genero : generos) {
+            System.out.println(genero);
+        }
+
     }
 }
 
@@ -112,6 +123,23 @@ class Dom{
             cont = 0;   
         }
         return res;
+    }
+
+    public ArrayList<String> enumeraGeneros(Document doc){
+        ArrayList<String> generos = new ArrayList<String>();
+        String genero = "";
+        Node filmoteca = doc.getFirstChild();
+        NodeList peliculas = filmoteca.getChildNodes();
+        for(int i = 0;i < peliculas.getLength();i++){
+            Node pelicula = peliculas.item(i);
+            if(pelicula.getNodeType() == Node.ELEMENT_NODE){
+                genero = ((Element)pelicula).getAttribute("genero");
+                if(!generos.contains(genero)){
+                    generos.add(genero);
+                }
+            }
+        }
+        return generos;
     }
 
 }
