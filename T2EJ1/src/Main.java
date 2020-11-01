@@ -35,7 +35,7 @@ public class Main {
         }
         
         //d.añadirAtributo(arbol, "Dune", "prueba", "prueba");
-        //d.eliminarAtributo(arbol, "Dune", "genero");
+        d.añadirAtributo(arbol, "Dune", "genero", true);
         d.grabaDOM(arbol, new FileOutputStream(new File("a.xml")));
 
     }
@@ -150,31 +150,38 @@ class Dom{
         return generos;
     }
 
-    public void añadirAtributo(Document doc,String titulo,String nombre,String valor){
+    public void añadirAtributo(Document doc,String titulo,String nombre,boolean eliminar,String... valor) throws IllegalArgumentException{
         Node filmoteca = doc.getFirstChild();
         NodeList peliculas = filmoteca.getChildNodes();
-
-        for(int i = 0;i < peliculas.getLength();i++){
-            Node pelicula = peliculas.item(i);
-            if(pelicula.getNodeType() == Node.ELEMENT_NODE){
-                NodeList datosPelicula = pelicula.getChildNodes();
-                for(int j = 0;j < datosPelicula.getLength();j++){
-                    Node dato = datosPelicula.item(j);
-                    if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")){
-                        if(dato.getFirstChild().getNodeValue().equals(titulo)){
-                            if (((Element) pelicula).hasAttribute(nombre)) {
-
-                            } else {
-                                ((Element) pelicula).setAttribute(nombre, valor);
+        if(!(valor.length > 1)){
+            for (int i = 0; i < peliculas.getLength(); i++) {
+                Node pelicula = peliculas.item(i);
+                if (pelicula.getNodeType() == Node.ELEMENT_NODE) {
+                    NodeList datosPelicula = pelicula.getChildNodes();
+                    for (int j = 0; j < datosPelicula.getLength(); j++) {
+                        Node dato = datosPelicula.item(j);
+                        if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")) {
+                            if (dato.getFirstChild().getNodeValue().equals(titulo)) {
+                                if (((Element) pelicula).hasAttribute(nombre)) {
+                                    if(eliminar){
+                                        ((Element) pelicula).removeAttribute(nombre);
+                                    }
+                                } else {
+                                    if(!eliminar){
+                                        ((Element) pelicula).setAttribute(nombre, valor[0]);
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+        }else{
+            throw new IllegalArgumentException();
         }
     }
 
-    public void eliminarAtributo(Document doc, String titulo, String nombre) {
+    /*public void eliminarAtributo(Document doc, String titulo, String nombre) {
         Node filmoteca = doc.getFirstChild();
         NodeList peliculas = filmoteca.getChildNodes();
 
@@ -194,7 +201,7 @@ class Dom{
                 }
             }
         }
-    }
+    }*/
 
     public void grabaDOM(Document document, FileOutputStream ficheroSalida) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
