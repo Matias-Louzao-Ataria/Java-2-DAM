@@ -8,18 +8,18 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws Exception {
         Operaciones o = new Operaciones();
-        long t = System.currentTimeMillis();
-        o.copiarSinBuffered(10,1);
-        System.out.println((System.currentTimeMillis()-t)/1000);
-        t = System.currentTimeMillis();
-        o.copiarSinBuffered(100,2);
-        System.out.println((System.currentTimeMillis()-t)/1000);
-        t = System.currentTimeMillis();
-        o.copiarSinBuffered(1000,3);
-        System.out.println((System.currentTimeMillis()-t)/1000);
+        long t;
+        int[] tamaños = {10,100,1000}; 
+        
+        for (int i = 0; i < tamaños.length; i++) {
+            t = System.currentTimeMillis();
+            o.copiarSinBuffered(tamaños[i],1+i);
+            System.out.println((System.currentTimeMillis()-t)+"ms");
+        }
+        
         t = System.currentTimeMillis();
         o.copiarConBuffered(4);
-        System.out.println((System.currentTimeMillis()-t)/1000);
+        System.out.println((System.currentTimeMillis()-t)+"ms");
     }
 }
 

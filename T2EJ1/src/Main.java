@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -18,7 +17,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Dom d = new Dom();
         Document arbol = d.crearArbol();
-        int autores = 1;
+        int autores = 2;
         String peliculas = "";
         ArrayList<String> generos = d.enumeraGeneros(arbol);
         ArrayList<String> titulos = d.mostrarTitulos(arbol);
@@ -26,6 +25,7 @@ public class Main {
         for (String string : titulos) {
             System.out.println(string);
             System.out.println(d.mostrarDirectores(arbol, string));
+            System.out.println(d.conseguirGenero(d.buscarPelicula(arbol, string)));
             System.out.println();
         }
         peliculas = d.peliculasDirectores(d.crearArbol(), autores);
@@ -85,7 +85,6 @@ class Dom{
         NodeList datosPelicula,datosDirector;
         String res = "";
         Node pelicula = buscarPelicula(doc, titulo);
-        res += ((Element)pelicula).getAttribute("genero")+"\n";
         datosPelicula = pelicula.getChildNodes();
         for(int i = 0;i < datosPelicula.getLength();i++){
             Node dato = datosPelicula.item(i);
@@ -163,13 +162,19 @@ class Dom{
         for(int i = 0;i < peliculas.getLength();i++){
             Node pelicula = peliculas.item(i);
             if(pelicula.getNodeType() == Node.ELEMENT_NODE){
-                genero = ((Element)pelicula).getAttribute("genero");
+                genero = conseguirGenero(pelicula);
                 if(!generos.contains(genero)){
                     generos.add(genero);
                 }
             }
         }
         return generos;
+    }
+
+    public String conseguirGenero(Node pelicula) {
+        String genero;
+        genero = ((Element)pelicula).getAttribute("genero");
+        return genero;
     }
 
     public void añadirAtributo(Document doc,String titulo,String nombre,boolean eliminar,String... valor) throws IllegalArgumentException{
@@ -292,7 +297,9 @@ class Dom{
                 }
             }else{
                 if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals(modificar)) {
-                    dato.getFirstChild().setNodeValue(valor);
+                    if(dato.getFirstChild().getNodeValue().equals(valorAntiguo)){
+                        dato.getFirstChild().setNodeValue(valor);
+                    }
                 }
             }
         }

@@ -10,22 +10,15 @@ public class Main {
         String home = System.getProperty("user.home"),sep = System.getProperty("file.separator");
         File in = new File("cc.jpg"),out = new File(home+sep+"copia.jpg");
         interpreter interpretador = new interpreter();
-        long t1 = System.currentTimeMillis(),t1f = 0,t2 = 0,t2f = 0;
+        int[] tamaños = {100,1000,10000};
+        long t1 = System.currentTimeMillis();
         interpretador.copiaSinBuffer(in,out);
-        t1f = System.currentTimeMillis();
-        System.err.println("Tiempo de ejecución: "+(t1f-t1)+"ms");
-        t2 = System.currentTimeMillis();
-        interpretador.copiaConBuffer(in, new File(home+sep+"copia2.jpg"),100);
-        t2f = System.currentTimeMillis();
-        System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
-        t2 = System.currentTimeMillis();
-        interpretador.copiaConBuffer(in, new File(home + sep + "copia2.jpg"), 1000);
-        t2f = System.currentTimeMillis();
-        System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
-        t2 = System.currentTimeMillis();
-        interpretador.copiaConBuffer(in, new File(home + sep + "copia2.jpg"), 10000);
-        t2f = System.currentTimeMillis();
-        System.err.println("Tiempo de ejecución: " + (t2f - t2) + "ms");
+        System.err.println("Tiempo de ejecución: "+(System.currentTimeMillis()-t1)+"ms");
+        for (int i = 0; i < tamaños.length; i++) {
+            t1 = System.currentTimeMillis();
+            interpretador.copiaConBuffer(in, new File(home+sep+"copia"+(i+2)+".jpg"),tamaños[i]);
+            System.err.println("Tiempo de ejecución: "+(System.currentTimeMillis()-t1)+"ms");
+        }
     }
 }
 

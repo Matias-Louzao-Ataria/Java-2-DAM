@@ -229,13 +229,11 @@ class Operaciones{
     }
 
     public boolean añadirPersona(String nombre, String apellidos,String dni ,int edad) {
-        personas.add(new Persona(nombre, apellidos,dni,edad));
-        return true;
+        return personas.add(new Persona(nombre, apellidos,dni,edad));
     }
 
     public boolean añadirDepartamento(String nombre,String empresa,int numempleados,int id) {
-        departamentos.add(new Depart(nombre,empresa,id,numempleados));
-        return true;
+        return departamentos.add(new Depart(nombre,empresa,id,numempleados));
     }
 
     /**
@@ -246,8 +244,7 @@ class Operaciones{
     public boolean borrarPersona(String dni){
         for (Persona persona : personas) {
             if(persona.getDni().equals(dni)){
-                personas.remove(persona);
-                return true;
+                return personas.remove(persona);
             }
         }
         return false;
@@ -275,8 +272,7 @@ class Operaciones{
     public boolean borrarDepart(int id){
         for (Depart depart : departamentos){
             if(depart.getId() == id){
-                departamentos.remove(depart);
-                return true;
+                return departamentos.remove(depart);
             }
         }
         return false;
