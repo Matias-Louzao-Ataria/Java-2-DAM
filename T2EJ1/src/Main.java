@@ -28,7 +28,7 @@ public class Main {
             System.out.println(d.conseguirGenero(d.buscarPelicula(arbol, string)));
             System.out.println();
         }
-        peliculas = d.peliculasDirectores(d.crearArbol(), autores);
+        peliculas = d.peliculasDependiendoDeNDirectores(d.crearArbol(), autores);
         System.out.println("Películas con "+autores+" director(es):\n"+peliculas);
 
         System.out.printf("Existen: %d generos y son:\n",generos.size());
@@ -124,7 +124,7 @@ class Dom{
         return res; 
     }
 
-    public String peliculasDirectores(Document doc,int numDirectores){
+    public String peliculasDependiendoDeNDirectores(Document doc,int numDirectores){
         Node filmoteca = doc.getFirstChild();
         NodeList peliculas = filmoteca.getChildNodes();
         int cont = 0;
