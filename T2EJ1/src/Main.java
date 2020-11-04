@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 public class Main {
     public static void main(String[] args) throws Exception {
         Dom d = new Dom();
-        Document arbol = d.crearArbol();
+        Document arbol = d.crearArbol("peliculas.xml");
         int autores = 2;
         String peliculas = "";
         ArrayList<String> generos = d.enumeraGeneros(arbol);
@@ -28,7 +28,7 @@ public class Main {
             System.out.println(d.conseguirGenero(d.buscarPelicula(arbol, string)));
             System.out.println();
         }
-        peliculas = d.peliculasDependiendoDeNDirectores(d.crearArbol(), autores);
+        peliculas = d.peliculasDependiendoDeNDirectores(arbol, autores);
         System.out.println("Películas con "+autores+" director(es):\n"+peliculas);
 
         System.out.printf("Existen: %d generos y son:\n",generos.size());
@@ -39,10 +39,12 @@ public class Main {
         try{
             d.añadirAtributo(arbol, "Dune", "prueba", false, "prueba");
             // d.añadirAtributo(arbol, "Dune", "genero", true);
-            // d.añadirPelícula("Depredador", "acción", "Jhon", "Tiernan", "en", 1987,
-            // arbol);
+            d.añadirPelícula("Depredador", "acción", "en", 1987,arbol,"Jhon Tiernan","Algo Prueba");
             // d.modificarPelicula(arbol, "Matrix", "nombre", "Lana","Larry");
+            Document a = d.añadirDirector(arbol, "Dune", "Alfredo Landa");
+            d.borrarPelicula(arbol, "Dune");
             d.grabaDOM(arbol, new FileOutputStream(new File("a.xml")));
+            d.grabaDOM(a, new FileOutputStream(new File("b.xml")));
         }catch(IllegalArgumentException e){
             System.err.println("Introduzca solo un valor!");
         }
@@ -50,9 +52,8 @@ public class Main {
 }
 
 class Dom{
-    private String ruta = "peliculas.xml";
 
-    public Document crearArbol(){
+    public Document crearArbol(String ruta){
         Document doc = null;
         try{
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -73,7 +74,7 @@ class Dom{
             peliculaActual = peliculas.item(i);
             datosActuales = peliculaActual.getChildNodes();
             for(int j = 0;j < datosActuales.getLength();j++){
-                if(datosActuales.item(j).getNodeType() == Node.ELEMENT_NODE && datosActuales.item(j).getNodeName().equals("titulo")){
+                if(datosActuales.item(j).getNodeName().equals("titulo")){
                     res.add(datosActuales.item(j).getFirstChild().getNodeValue());
                 }
             }
@@ -98,6 +99,7 @@ class Dom{
                 }
             }
         }
+        return res; 
         /*for (int i = 0; i < peliculas.getLength();i++) {
             datosPelicula = peliculas.item(i).getChildNodes();
             for (int j = 0; j < datosPelicula.getLength(); j++) {
@@ -121,7 +123,6 @@ class Dom{
             }
             coincide = false;
         }*/
-        return res; 
     }
 
     public String peliculasDependiendoDeNDirectores(Document doc,int numDirectores){
@@ -172,9 +173,7 @@ class Dom{
     }
 
     public String conseguirGenero(Node pelicula) {
-        String genero;
-        genero = ((Element)pelicula).getAttribute("genero");
-        return genero;
+        return ((Element)pelicula).getAttribute("genero");
     }
 
     public void añadirAtributo(Document doc,String titulo,String nombre,boolean eliminar,String... valor) throws IllegalArgumentException{
@@ -224,7 +223,7 @@ class Dom{
         }
     }
 
-    public void añadirPelícula(String titulo,String genero,String nombre,String apellidos,String idioma,int añoSalida,Document doc){
+    public void añadirPelícula(String titulo,String genero,String idioma,int añoSalida,Document doc,String... directores){
         Node filmoteca = doc.getFirstChild();
         Text text = doc.createTextNode("\n");
 
@@ -244,25 +243,27 @@ class Dom{
         Element directorNode = doc.createElement("director");
         directorNode.appendChild(text);
 
-        Element nombreDirectorNode = doc.createElement("nombre");
-        Text nombreDirectorText = doc.createTextNode(nombre);
-        nombreDirectorNode.appendChild(nombreDirectorText);
-        nombreDirectorNode.appendChild(text);
+        for(int i = 0;i < directores.length;i++){
+            Element nombreDirectorNode = doc.createElement("nombre");
+            Text nombreDirectorText = doc.createTextNode(directores[i].substring(0, directores[i].indexOf("\s")));
+            nombreDirectorNode.appendChild(nombreDirectorText);
+            nombreDirectorNode.appendChild(text);
+    
+            Element apellidoDirectorNode = doc.createElement("apellido");
+            Text apellidoDText = doc.createTextNode(directores[i].substring(directores[i].indexOf("\s"),directores[i].length()));
+            apellidoDirectorNode.appendChild(apellidoDText);
+            apellidoDirectorNode.appendChild(text);
+    
+            directorNode.appendChild(nombreDirectorNode);
+            directorNode.appendChild(apellidoDirectorNode);
+        }
 
-        Element apellidoDirectorNode = doc.createElement("apellido");
-        Text apellidoDText = doc.createTextNode(apellidos);
-        apellidoDirectorNode.appendChild(apellidoDText);
-        apellidoDirectorNode.appendChild(text);
-
-        directorNode.appendChild(nombreDirectorNode);
-        directorNode.appendChild(apellidoDirectorNode);
         pelicula.appendChild(directorNode);
     }
 
     public Node buscarPelicula(Document doc,String titulo){
         Node filmoteca = doc.getFirstChild();
         NodeList peliculas = filmoteca.getChildNodes();
-        Node res = null;
         for(int i = 0;i < peliculas.getLength();i++){
             Node pelicula = peliculas.item(i);
             NodeList datosPelicula = pelicula.getChildNodes();
@@ -270,12 +271,12 @@ class Dom{
                 Node dato = datosPelicula.item(j);
                 if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")) {
                     if (dato.getFirstChild().getNodeValue().equals(titulo)) {
-                        res = pelicula;
+                        return pelicula;
                     }
                 }
             }
         }
-        return res;
+        return null;
     }
 
     public void modificarPelicula(Document doc,String titulo,String modificar,String valor,String valorAntiguo){
@@ -327,6 +328,34 @@ class Dom{
         }
     }*/
 
+    public void borrarPelicula(Document doc,String titulo){
+        Node pelicula = buscarPelicula(doc, titulo);
+        doc.getFirstChild().removeChild(pelicula);
+    }
+
+    public Document añadirDirector(Document doc,String titulo,String director){
+        Node pelicula = buscarPelicula(doc, titulo);
+        Text text = doc.createTextNode("\n");
+        Element directorNode = doc.createElement("director");
+        directorNode.appendChild(text);
+        
+        Element nombreDirectorNode = doc.createElement("nombre");
+        Text nombreDirectorText = doc.createTextNode(director.substring(0, director.indexOf("\s")));
+        nombreDirectorNode.appendChild(nombreDirectorText);
+        nombreDirectorNode.appendChild(text);
+
+        Element apellidoDirectorNode = doc.createElement("apellido");
+        Text apellidoDText = doc.createTextNode(director.substring(director.indexOf("\s"),director.length()));
+        apellidoDirectorNode.appendChild(apellidoDText);
+        apellidoDirectorNode.appendChild(text);
+            
+        directorNode.appendChild(nombreDirectorNode);
+        directorNode.appendChild(apellidoDirectorNode);
+        pelicula.appendChild(directorNode);
+
+        return (Document)pelicula.getParentNode().getParentNode();
+    }
+
     public void grabaDOM(Document document, FileOutputStream ficheroSalida) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
         DOMImplementationLS ls = (DOMImplementationLS) registry.getDOMImplementation("XML 3.0 LS 3.0");
@@ -351,5 +380,4 @@ class Dom{
         serializer.write(document, output);
         // String xmlCad=serializer.writeToString(document);
     }
-
 }
