@@ -37,13 +37,13 @@ public class Main {
         }
         
         try{
-            d.añadirAtributo(arbol, "Dune", "prueba", false, "prueba");
-            // d.añadirAtributo(arbol, "Dune", "genero", true);
-            d.añadirPelícula("Depredador", "acción", "en", 1987,arbol,"Jhon Tiernan","Algo Prueba");
-            // d.modificarPelicula(arbol, "Matrix", "nombre", "Lana","Larry");
-            Document a = d.añadirDirector(arbol, "Dune", "Alfredo Landa");
-            d.borrarPelicula(arbol, "Dune");
+            d.añadirAtributo(arbol, "Dune", "prueba", "prueba");
+            d.eliminarAtributo(arbol, "Dune", "genero");
+            d.añadirPelícula(arbol,"Depredador", "acción", "en", 1987,"Jhon Tiernan","Algo Prueba");
+            d.modificarNombreDirector(arbol,"Larry","Wachowski","Lana");
+            Document a = d.añadirDirector("Dune", "Alfredo Landa");
             d.grabaDOM(arbol, new FileOutputStream(new File("a.xml")));
+            d.borrarPelicula(arbol, "Dune");
             d.grabaDOM(a, new FileOutputStream(new File("b.xml")));
         }catch(IllegalArgumentException e){
             System.err.println("Introduzca solo un valor!");
@@ -89,7 +89,7 @@ class Dom{
         datosPelicula = pelicula.getChildNodes();
         for(int i = 0;i < datosPelicula.getLength();i++){
             Node dato = datosPelicula.item(i);
-            if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("director")){
+            if(dato.getNodeName().equals("director")){
                 datosDirector = dato.getChildNodes();
                 for(int j = 0;j < datosDirector.getLength();j++){
                     Node datoDirector = datosDirector.item(j);
@@ -137,10 +137,10 @@ class Dom{
                 NodeList datosPelicula = pelicula.getChildNodes();
                 for(int j = 0;j < datosPelicula.getLength();j++){
                     Node dato = datosPelicula.item(j);
-                    if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("director")){
+                    if(dato.getNodeName().equals("director")){
                         cont++;
                     }
-                    if(dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")){
+                    if(dato.getNodeName().equals("titulo")){
                         titulo = dato.getFirstChild().getNodeValue();
                     }
                 }
@@ -176,21 +176,28 @@ class Dom{
         return ((Element)pelicula).getAttribute("genero");
     }
 
-    public void añadirAtributo(Document doc,String titulo,String nombre,boolean eliminar,String... valor) throws IllegalArgumentException{
+    public void añadirAtributo(Document doc,String titulo,String attrib,String valor){
+        modificarAtributo(doc, titulo, attrib,false, valor);
+    }
+
+    public void eliminarAtributo(Document doc,String titulo,String attrib){
+        modificarAtributo(doc, titulo, attrib,true,null);
+    }
+
+    public void modificarAtributo(Document doc,String titulo,String attrib,boolean eliminar,String valor){
         Node pelicula = buscarPelicula(doc, titulo);
-        if(!(valor.length > 1)){
-            NodeList datosPelicula = pelicula.getChildNodes();
+        NodeList datosPelicula = pelicula.getChildNodes();
             for (int i = 0; i < datosPelicula.getLength(); i++) {
                 Node dato = datosPelicula.item(i);
-                if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")) {
+                if (dato.getNodeName().equals("titulo")) {
                     if (dato.getFirstChild().getNodeValue().equals(titulo)) {
-                        if (((Element) pelicula).hasAttribute(nombre)) {
+                        if (((Element) pelicula).hasAttribute(attrib)) {
                             if (eliminar) {
-                                ((Element) pelicula).removeAttribute(nombre);
+                                ((Element) pelicula).removeAttribute(attrib);
                             }
                         } else {
                             if (!eliminar) {
-                                ((Element) pelicula).setAttribute(nombre, valor[0]);
+                                ((Element) pelicula).setAttribute(attrib, valor);
                             }
                         }
                     }
@@ -218,12 +225,9 @@ class Dom{
                     }
                 }
             }*/
-        }else{
-            throw new IllegalArgumentException();
-        }
     }
 
-    public void añadirPelícula(String titulo,String genero,String idioma,int añoSalida,Document doc,String... directores){
+    public void añadirPelícula(Document doc,String titulo,String genero,String idioma,int añoSalida,String... directores){
         Node filmoteca = doc.getFirstChild();
         Text text = doc.createTextNode("\n");
 
@@ -269,7 +273,7 @@ class Dom{
             NodeList datosPelicula = pelicula.getChildNodes();
             for(int j = 0;j < datosPelicula.getLength();j++){
                 Node dato = datosPelicula.item(j);
-                if (dato.getNodeType() == Node.ELEMENT_NODE && dato.getNodeName().equals("titulo")) {
+                if (dato.getNodeName().equals("titulo")) {
                     if (dato.getFirstChild().getNodeValue().equals(titulo)) {
                         return pelicula;
                     }
@@ -279,8 +283,19 @@ class Dom{
         return null;
     }
 
-    public void modificarPelicula(Document doc,String titulo,String modificar,String valor,String valorAntiguo){
-        Node pelicula = buscarPelicula(doc, titulo);
+    public void modificarNombreDirector(Document doc,String nombreAntiguo,String apellido,String nombreNuevo){
+        NodeList directores = doc.getElementsByTagName("director");
+        for(int i = 0;i < directores.getLength();i++){
+            NodeList datosDirector = directores.item(i).getChildNodes();
+            for (int j = 1; j < datosDirector.getLength(); j+=3) {
+                if(datosDirector.item(j).getNodeName().equals("nombre")){
+                    if(datosDirector.item(j).getFirstChild().getNodeValue().equals(nombreAntiguo) && datosDirector.item(j+2).getFirstChild().getNodeValue().equals(apellido)){
+                        datosDirector.item(j).getFirstChild().setNodeValue(nombreNuevo);
+                    }
+                }
+            }
+        }
+        /*Node pelicula = buscarPelicula(doc, titulo);
         System.out.println(pelicula == null);
         NodeList datosPelicula = pelicula.getChildNodes();
         
@@ -303,7 +318,7 @@ class Dom{
                     }
                 }
             }
-        }
+        }*/
     }
 
     /*public void eliminarAtributo(Document doc, String titulo, String nombre) {
@@ -333,7 +348,8 @@ class Dom{
         doc.getFirstChild().removeChild(pelicula);
     }
 
-    public Document añadirDirector(Document doc,String titulo,String director){
+    public Document añadirDirector(String titulo,String director){
+        Document doc = crearArbol("peliculas.xml");
         Node pelicula = buscarPelicula(doc, titulo);
         Text text = doc.createTextNode("\n");
         Element directorNode = doc.createElement("director");

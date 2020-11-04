@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><filmoteca>
+    <pelicula año="1984" idioma="es" prueba="prueba">
+        <titulo>Dune</titulo>
+        <director>
+            <nombre>David</nombre>
+            <apellido>Lynch</apellido>
+        </director>
+    </pelicula>
     <pelicula año="2001" genero="Fantasia" idioma="es">
         <titulo>El Señor de los Anillos</titulo>
         <director>
@@ -13,7 +20,7 @@
             <apellido>Wachowski</apellido>
         </director>
         <director>
-            <nombre>Larry</nombre>
+            <nombre>Lana</nombre>
             <apellido>Wachowski</apellido>
         </director>
     </pelicula>
