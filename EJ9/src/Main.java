@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,10 +27,22 @@ public class Main {
          System.out.println(input.readDouble()); input.close(); in.close();
          */
 
-        Scanner sc = new Scanner(System.in);
+        /*Scanner sc = new Scanner(System.in);
         Operaciones o = new Operaciones(sc);
         o.menu();
-        sc.close();
+        sc.close();*/
+        Operaciones o = new Operaciones();
+        o.darDeAlta(1, "a", 11111111);
+        o.darDeAlta(2, "b", 12111111);
+        o.darDeAlta(3, "c", 11311111);
+        o.darDeAlta(4, "d", 11141111);
+        System.out.println(o.consultarAlumno(1).getNombre());
+        o.modificarAlumno(1, "g", 13111111);
+        o.guardar();
+        System.out.println(o.consultarAlumno(1).getNombre());
+        o.borrarAlumno(1);
+        o.guardar();
+        System.out.println(o.consultarAlumno(1).getNombre());
     }
 }
 
@@ -88,12 +101,17 @@ class Alumno {
 }
 
 class Operaciones {
-    private ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
+    //private ArrayList<Alumno> alumnos = new ArrayList<Alumno>();
     private String home = System.getProperty("user.home"), sep = System.getProperty("file.separator");
-    private File f = new File(home + sep + "alumnos.dat");
-    private Scanner sc;
+    private File f = new File(home + sep + "alumnos.dat.temp");
+    private File fverdeadero = new File(home + sep + "alumnos.dat");
+    //private Scanner sc;
 
-    public Operaciones(Scanner sc) {
+    public Operaciones(){
+        
+    }
+
+    /*public Operaciones(Scanner sc) {
         this.sc = sc;
         try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);){
             if (f.exists() && f.length() > 0) {
@@ -113,9 +131,9 @@ class Operaciones {
             System.err.println(e.getLocalizedMessage());
             System.err.println("Archivo alumnos.dat no formateado correctamente.");
         }
-    }
+    }*/
 
-    public void menu(){
+    /*public void menu(){
         int id = 0,elect = 0;
         while (elect != 5) {
             System.out.println("1.- Dar de alta.\n2.- Consultar alumno.\n3.- Modificar alumno.\n4.- Borar alumno.\n5.- Salir.\n");
@@ -152,9 +170,9 @@ class Operaciones {
             }
         }
         guardar();
-    }
+    }*/
 
-    public void consultarAlumno(int id) {
+    /*public void consultarAlumno(int id) {
         boolean echo = false;
         for (Alumno alumno : alumnos) {
             if (alumno.getId() == id) {
@@ -176,9 +194,30 @@ class Operaciones {
         if (!echo) {
             System.out.println("No se encuentra el alumno!");
         }
+    }*/
+
+    public Alumno consultarAlumno(int id){
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in)){
+            int idActual = 0;
+            while(true){
+                idActual = input.readInt();
+                if(idActual == id){
+                    return new Alumno(id,input.readUTF(),input.readInt());
+                }else{
+                    input.readUTF();
+                    input.readInt();
+                }
+            }
+        }catch(EOFException e){
+            
+        }
+        catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+        }
+        return null;
     }
 
-    public void modificarAlumno(int id) {
+    /*public void modificarAlumno(int id) {
         boolean mod = false;
         int pos = 0;
         for (Alumno alumno : alumnos) {
@@ -194,9 +233,35 @@ class Operaciones {
             System.out.println("No se encuentra el alumno!");
         }
 
+    }*/
+
+    public boolean modificarAlumno(int id,String nombre,int fecha){
+        //Alumno actual = consultarAlumno(id);
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+            int idActual = 0;
+            while(true){
+                idActual = input.readInt();
+                if(idActual == id){
+                    output.writeInt(id);
+                    output.writeUTF(nombre);
+                    output.writeInt(fecha);
+                }else{
+                    output.writeInt(id);
+                    output.writeUTF(input.readUTF());
+                    output.writeInt(input.readInt());
+                }
+            }
+        }catch(EOFException e){
+
+        }
+        catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }
 
-    public void borrarAlumno(int id) {
+    /*public void borrarAlumno(int id) {
         boolean echo = false;
         for(int i = alumnos.size(); i > 0;i--){
             if(alumnos.get(i).getId() == id){
@@ -210,16 +275,53 @@ class Operaciones {
         } else {
             System.out.println("Se ha eliminado correctamente el almuno!");
         }
+    }*/
+    
+    public boolean borrarAlumno(int id){
+        //Alumno actual = consultarAlumno(id);
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+            int idActual = 0;
+            while(true){
+                idActual = input.readInt();
+                if(idActual == id){
+                    
+                }else{
+                    output.writeInt(id);
+                    output.writeUTF(input.readUTF());
+                    output.writeInt(input.readInt());
+                }
+            }
+        }catch(EOFException e){
+
+        }
+        catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }
 
-    public void darDeAlta(int fecha, String nombre, int id, boolean echo) {
+
+    /*public void darDeAlta(int fecha, String nombre, int id, boolean echo) {
         alumnos.add(new Alumno(fecha, nombre, id));
         if(echo){
             System.out.println("Alumno agregado correctamente!");
         }
+    }*/
+
+    public boolean darDeAlta(int id, String nombre, int fecha){
+        try(FileOutputStream out = new FileOutputStream(fverdeadero,true);DataOutputStream output = new DataOutputStream(out)){
+            output.writeInt(id);
+            output.writeUTF(nombre);
+            output.writeInt(fecha);
+        }catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }
 
-    public void guardar() {
+    /*public void guardar() {
         try(FileOutputStream out = new FileOutputStream(f,true);DataOutputStream output = new DataOutputStream(out);){ 
             for (Alumno alumno : alumnos) {
                 output.writeInt(alumno.getFecha());
@@ -230,9 +332,29 @@ class Operaciones {
             System.err.println(e.getLocalizedMessage());
         }
         
+    }*/
+
+    public boolean guardar(){
+        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(fverdeadero);DataOutputStream output = new DataOutputStream(out)){
+            while(true){
+                output.writeInt(input.readInt());
+                output.writeUTF(input.readUTF());
+                output.writeInt(input.readInt());
+            }
+        }catch(EOFException e){
+
+        }
+        catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+            return false;
+        }
+        finally{
+            //f.delete();
+        }
+        return true;
     }
 
-    public void entradaDeDatos(int pos,int id){
+    /*public void entradaDeDatos(int pos,int id){
         String nombre = "";
         int fecha = 0;
         while(fecha == 0){
@@ -247,9 +369,9 @@ class Operaciones {
                 alumnos.set(pos, new Alumno(fecha, nombre, id));
             }
         }
-    }
+    }*/
 
-    public void entradaDeDatos(){
+    /*public void entradaDeDatos(){
         String nombre = "";
         int id = 0;
         int fecha = 0;
@@ -272,18 +394,18 @@ class Operaciones {
                 }
             }
         }
-    }
+    }*/
 
-    public boolean comprobarId(int id){
+    /*public boolean comprobarId(int id){
         for (Alumno alumno : alumnos) {
             if(id == alumno.getId()){
                 return false;
             }
         }
         return true;
-    }
+    }*/
     
-    public int pedirEntero() {
+    /*public int pedirEntero() {
         int res = 0;
         try {
             res = sc.nextInt();
@@ -296,7 +418,7 @@ class Operaciones {
             res = 0;
         }
         return res;
-    }
+    }*/
     
     
     
