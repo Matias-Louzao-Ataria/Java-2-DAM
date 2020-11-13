@@ -1,3 +1,5 @@
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -38,11 +40,11 @@ public class Main {
         o.darDeAlta(4, "d", 11141111);
         System.out.println(o.consultarAlumno(1).getNombre());
         o.modificarAlumno(1, "g", 13111111);
-        o.guardar();
+        //o.guardar();
         System.out.println(o.consultarAlumno(1).getNombre());
         o.borrarAlumno(1);
-        o.guardar();
         System.out.println(o.consultarAlumno(1).getNombre());
+        o.guardar();
     }
 }
 
@@ -108,8 +110,30 @@ class Operaciones {
     //private Scanner sc;
 
     public Operaciones(){
-        
+        copiarConBuffered();
     }
+
+    public void copiarConBuffered(){
+        if(f.exists()){
+            try(FileInputStream in = new FileInputStream(fverdeadero);FileOutputStream out = new FileOutputStream(f);
+            BufferedInputStream input = new BufferedInputStream(in);BufferedOutputStream output = new BufferedOutputStream(out)){
+                int i;
+                while((i = input.read()) != -1){
+                    output.write(i);
+                }
+                f.delete();
+            }catch(IOException e){
+                System.out.println(e.getLocalizedMessage());
+            }
+        }else{
+            try {
+                f.createNewFile();
+                copiarConBuffered();
+            } catch (IOException e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
+}
 
     /*public Operaciones(Scanner sc) {
         this.sc = sc;
@@ -197,7 +221,7 @@ class Operaciones {
     }*/
 
     public Alumno consultarAlumno(int id){
-        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in)){
+        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in)){
             int idActual = 0;
             while(true){
                 idActual = input.readInt();
@@ -237,7 +261,7 @@ class Operaciones {
 
     public boolean modificarAlumno(int id,String nombre,int fecha){
         //Alumno actual = consultarAlumno(id);
-        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
             int idActual = 0;
             while(true){
                 idActual = input.readInt();
@@ -279,7 +303,7 @@ class Operaciones {
     
     public boolean borrarAlumno(int id){
         //Alumno actual = consultarAlumno(id);
-        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
             int idActual = 0;
             while(true){
                 idActual = input.readInt();
@@ -310,7 +334,7 @@ class Operaciones {
     }*/
 
     public boolean darDeAlta(int id, String nombre, int fecha){
-        try(FileOutputStream out = new FileOutputStream(fverdeadero,true);DataOutputStream output = new DataOutputStream(out)){
+        try(FileOutputStream out = new FileOutputStream(f,true);DataOutputStream output = new DataOutputStream(out)){
             output.writeInt(id);
             output.writeUTF(nombre);
             output.writeInt(fecha);
