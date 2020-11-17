@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Dom d = new Dom();
         Document arbol = d.crearArbol("peliculas.xml");
-        int autores = 2;
+        /*int autores = 2;
         String peliculas = "";
         ArrayList<String> generos = d.enumeraGeneros(arbol);
         ArrayList<String> titulos = d.mostrarTitulos(arbol);
@@ -50,7 +50,9 @@ public class Main {
             d.grabaDOM(d.compañia(), new FileOutputStream(new File("compañia.xml")));
         } catch (IllegalArgumentException e) {
             System.err.println("Introduzca solo un valor!");
-        }
+        }*/
+        d.modificarNombreDirector(arbol, "Larry", "Wachowski", "Lanna");
+        d.grabaDOM(arbol, new FileOutputStream(new File("a.xml")));
     }
 }
 
@@ -274,6 +276,27 @@ class Dom {
 
     public void modificarNombreDirector(Document doc, String nombreAntiguo, String apellido, String nombreNuevo) {
         NodeList directores = doc.getElementsByTagName("director");
+        Node nodoNombre = null,nodoApellido = null;
+        for(int i = 0;i < directores.getLength();i++){
+            Node directorActual = directores.item(i);
+            NodeList datosDirector = directorActual.getChildNodes();
+            nodoNombre = null;
+            nodoApellido = null;
+            for(int j = 0;j < datosDirector.getLength();j++){
+                if(datosDirector.item(j).getNodeName().equals("nombre")){
+                    nodoNombre = datosDirector.item(j);
+                }
+
+                if(datosDirector.item(j).getNodeName().equals("apellido")){
+                    nodoApellido = datosDirector.item(j);
+                }
+
+            }
+            if(nodoNombre != null && nodoApellido != null && nodoNombre.getFirstChild().getNodeValue().equals(nombreAntiguo) && nodoApellido.getFirstChild().getNodeValue().equals(apellido)){
+                nodoNombre.getFirstChild().setNodeValue(nombreNuevo);
+            }
+        }
+        /*NodeList directores = doc.getElementsByTagName("director");
         for (int i = 0; i < directores.getLength(); i++) {
             NodeList datosDirector = directores.item(i).getChildNodes();
             for (int j = 1; j < datosDirector.getLength(); j += 3) {
@@ -284,7 +307,7 @@ class Dom {
                     }
                 }
             }
-        }
+        }*/
         /*
          * Node pelicula = buscarPelicula(doc, titulo); System.out.println(pelicula ==
          * null); NodeList datosPelicula = pelicula.getChildNodes();
