@@ -7,9 +7,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -34,17 +31,18 @@ public class Main {
         o.menu();
         sc.close();*/
         Operaciones o = new Operaciones();
-        o.darDeAlta(1, "a", 11111111);
-        o.darDeAlta(2, "b", 12111111);
-        o.darDeAlta(3, "c", 11311111);
-        o.darDeAlta(4, "d", 11141111);
+        for(int i = 1;i <= 5;i++){
+            if(o.comprobarId(i)){
+                o.darDeAlta(i,"a"+i,i+2);
+            }
+        }
         System.out.println(o.consultarAlumno(1).getNombre());
         o.modificarAlumno(1, "g", 13111111);
+        System.out.println(o.consultarAlumno(2).getNombre());
         //o.guardar();
         System.out.println(o.consultarAlumno(1).getNombre());
-        o.borrarAlumno(1);
-        System.out.println(o.consultarAlumno(1).getNombre());
-        o.guardar();
+        o.borrarAlumno(2);
+        System.out.println(o.consultarAlumno(3).getNombre());
     }
 }
 
@@ -110,20 +108,47 @@ class Operaciones {
     //private Scanner sc;
 
     public Operaciones(){
-        copiarConBuffered();
+        //copiarConBuffered();
+        if (f.exists()) {
+            if (fverdeadero.exists()) {
+                
+            } else {
+                try {
+                    fverdeadero.createNewFile();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+        } else {
+            try {
+                f.createNewFile();
+                copiarConBuffered();
+            } catch (IOException e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
     }
 
     public void copiarConBuffered(){
         if(f.exists()){
-            try(FileInputStream in = new FileInputStream(fverdeadero);FileOutputStream out = new FileOutputStream(f);
-            BufferedInputStream input = new BufferedInputStream(in);BufferedOutputStream output = new BufferedOutputStream(out)){
-                int i;
-                while((i = input.read()) != -1){
-                    output.write(i);
+            if(fverdeadero.exists()){
+                try (FileInputStream in = new FileInputStream(fverdeadero);
+                        FileOutputStream out = new FileOutputStream(f);
+                        BufferedInputStream input = new BufferedInputStream(in);
+                        BufferedOutputStream output = new BufferedOutputStream(out)) {
+                    int i;
+                    while ((i = input.read()) != -1) {
+                        output.write(i);
+                    }
+                } catch (IOException e) {
+                    System.out.println(e.getLocalizedMessage());
                 }
-                f.delete();
-            }catch(IOException e){
-                System.out.println(e.getLocalizedMessage());
+            }else{
+                try {
+                    fverdeadero.createNewFile();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                }
             }
         }else{
             try {
@@ -133,7 +158,7 @@ class Operaciones {
                 System.out.println(e.getLocalizedMessage());
             }
         }
-}
+    }
 
     /*public Operaciones(Scanner sc) {
         this.sc = sc;
@@ -221,12 +246,12 @@ class Operaciones {
     }*/
 
     public Alumno consultarAlumno(int id){
-        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in)){
-            int idActual = 0;
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in)){
+            int idActual;
             while(true){
                 idActual = input.readInt();
                 if(idActual == id){
-                    return new Alumno(id,input.readUTF(),input.readInt());
+                    return new Alumno(idActual,input.readUTF(),input.readInt());
                 }else{
                     input.readUTF();
                     input.readInt();
@@ -261,16 +286,18 @@ class Operaciones {
 
     public boolean modificarAlumno(int id,String nombre,int fecha){
         //Alumno actual = consultarAlumno(id);
-        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
-            int idActual = 0;
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+            int idActual;
             while(true){
                 idActual = input.readInt();
                 if(idActual == id){
-                    output.writeInt(id);
+                    output.writeInt(idActual);
                     output.writeUTF(nombre);
                     output.writeInt(fecha);
+                    input.readUTF();
+                    input.readInt();
                 }else{
-                    output.writeInt(id);
+                    output.writeInt(idActual);
                     output.writeUTF(input.readUTF());
                     output.writeInt(input.readInt());
                 }
@@ -282,6 +309,7 @@ class Operaciones {
             System.err.println(e.getLocalizedMessage());
             return false;
         }
+        guardar();
         return true;
     }
 
@@ -303,14 +331,15 @@ class Operaciones {
     
     public boolean borrarAlumno(int id){
         //Alumno actual = consultarAlumno(id);
-        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(f);DataOutputStream output = new DataOutputStream(out)){
             int idActual = 0;
             while(true){
                 idActual = input.readInt();
                 if(idActual == id){
-                    
+                    input.readUTF();
+                    input.readInt();
                 }else{
-                    output.writeInt(id);
+                    output.writeInt(idActual);
                     output.writeUTF(input.readUTF());
                     output.writeInt(input.readInt());
                 }
@@ -322,6 +351,7 @@ class Operaciones {
             System.err.println(e.getLocalizedMessage());
             return false;
         }
+        guardar();
         return true;
     }
 
@@ -342,6 +372,7 @@ class Operaciones {
             System.err.println(e.getLocalizedMessage());
             return false;
         }
+        guardar();
         return true;
     }
 
@@ -359,21 +390,38 @@ class Operaciones {
     }*/
 
     public boolean guardar(){
-        try(FileInputStream in = new FileInputStream(f);DataInputStream input = new DataInputStream(in);FileOutputStream out = new FileOutputStream(fverdeadero);DataOutputStream output = new DataOutputStream(out)){
-            while(true){
-                output.writeInt(input.readInt());
-                output.writeUTF(input.readUTF());
-                output.writeInt(input.readInt());
-            }
-        }catch(EOFException e){
+        if(f.exists()){
+            if(fverdeadero.exists()){
+                try (FileInputStream in = new FileInputStream(f);
+                        DataInputStream input = new DataInputStream(in);
+                        FileOutputStream out = new FileOutputStream(fverdeadero);
+                        DataOutputStream output = new DataOutputStream(out)) {
+                    while (true) {
+                        output.writeInt(input.readInt());
+                        output.writeUTF(input.readUTF());
+                        output.writeInt(input.readInt());
+                    }
+                } catch (EOFException e) {
 
-        }
-        catch(IOException e){
-            System.err.println(e.getLocalizedMessage());
-            return false;
-        }
-        finally{
-            //f.delete();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                    return false;
+                }
+            }else{
+                try {
+                    fverdeadero.createNewFile();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                    return false;
+                }
+            }
+        }else{
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                System.err.println(e.getLocalizedMessage());
+                return false;
+            }
         }
         return true;
     }
@@ -429,6 +477,26 @@ class Operaciones {
         return true;
     }*/
     
+
+    public boolean comprobarId(int id){
+        try(FileInputStream in = new FileInputStream(fverdeadero);DataInputStream input = new DataInputStream(in);){
+            int idActual = 0;
+            while(true){
+                idActual = input.readInt();
+                if(idActual == id){
+                    return false;
+                }
+                input.readUTF();
+                input.readInt();
+            }
+        }catch(EOFException e){
+
+        }catch(IOException e){
+            System.err.println(e.getLocalizedMessage());
+            return false;
+        }
+        return true;
+    }
     /*public int pedirEntero() {
         int res = 0;
         try {
@@ -443,6 +511,22 @@ class Operaciones {
         }
         return res;
     }*/
+
+    public File getF() {
+        return f;
+    }
+
+    public void setF(File f) {
+        this.f = f;
+    }
+
+    public File getFverdeadero() {
+        return fverdeadero;
+    }
+
+    public void setFverdeadero(File fverdeadero) {
+        this.fverdeadero = fverdeadero;
+    }
     
     
     
