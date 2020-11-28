@@ -15,6 +15,10 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.w3c.dom.Element;
 
+
+//EJ10 desde linea: 354 hasta linea: 377
+//EJ11 desde linea: 346 hasta linea: 350
+//EJ12 desde linea: 381 hasta linea: 433
 public class Main {
     public static void main(String[] args) throws Exception {
         Dom d = new Dom();
@@ -328,26 +332,28 @@ class Dom {
     }
 
     /*
-     * public void eliminarAtributo(Document doc, String titulo, String nombre) {
-     * Node filmoteca = doc.getFirstChild(); NodeList peliculas =
-     * filmoteca.getChildNodes();
-     * 
-     * for (int i = 0; i < peliculas.getLength(); i++) { Node pelicula =
-     * peliculas.item(i); if (pelicula.getNodeType() == Node.ELEMENT_NODE) {
-     * NodeList datosPelicula = pelicula.getChildNodes(); for (int j = 0; j <
-     * datosPelicula.getLength(); j++) { Node dato = datosPelicula.item(j); if
-     * (dato.getNodeType() == Node.ELEMENT_NODE &&
-     * dato.getNodeName().equals("titulo")) { if
-     * (dato.getFirstChild().getNodeValue().equals(titulo)) { if (((Element)
-     * pelicula).hasAttribute(nombre)) {
-     * ((Element)pelicula).removeAttribute(nombre); } } } } } } }
+      public void eliminarAtributo(Document doc, String titulo, String nombre) {
+      Node filmoteca = doc.getFirstChild(); NodeList peliculas =
+      filmoteca.getChildNodes();
+      
+      for (int i = 0; i < peliculas.getLength(); i++) { Node pelicula =
+      peliculas.item(i); if (pelicula.getNodeType() == Node.ELEMENT_NODE) {
+      NodeList datosPelicula = pelicula.getChildNodes(); for (int j = 0; j <
+      datosPelicula.getLength(); j++) { Node dato = datosPelicula.item(j); if
+      (dato.getNodeType() == Node.ELEMENT_NODE &&
+      dato.getNodeName().equals("titulo")) { if
+      (dato.getFirstChild().getNodeValue().equals(titulo)) { if (((Element)
+      pelicula).hasAttribute(nombre)) {
+      ((Element)pelicula).removeAttribute(nombre); } } } } } } }
      */
-
+    
+    //EJ11
     public void borrarPelicula(Document doc, String titulo) {
         Node pelicula = buscarPelicula(doc, titulo);
         doc.getFirstChild().removeChild(pelicula);
     }
 
+    //EJ10
     public Document añadirDirector(String titulo, String director) {
         Document doc = crearArbol("peliculas.xml");
         Node pelicula = buscarPelicula(doc, titulo);
@@ -372,6 +378,7 @@ class Dom {
         return (Document) pelicula.getParentNode().getParentNode();
     }
 
+    //EJ12
     public Document compañia() throws ParserConfigurationException {
         File f = new File("compañia.xml");
         if (!f.exists()) {

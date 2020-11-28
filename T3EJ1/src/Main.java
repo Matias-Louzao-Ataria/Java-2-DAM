@@ -18,6 +18,14 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.net.ssl.HttpsURLConnection;
 
+//EJ1 desde linea:96 hasta linea: 99
+//EJ2 desde linea:101 hasta linea: 104
+//EJ3 desde linea:106 hasta linea: 109
+//EJ5 desde linea:111 hasta linea: 115
+//EJ6 desde linea:118 hasta linea: 126
+//EJ7 desde linea:128 hasta linea: 136
+//EJ8 desde linea:138 hasta linea: 156
+
 public class Main {
     public static void main(String[] args) throws Exception {
         Jsonn json = new Jsonn();
@@ -85,24 +93,28 @@ class Jsonn {
         System.out.println("No se soporta la escritura");
         writer.close();
     }
-
+    //EJ1
     public JsonObject leeJsonLocalidad(String localidad){
         return leeJSON("http://api.openweathermap.org/data/2.5/weather?q="+localidad+",es&lang=es&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
     }
 
+    // EJ2
     public JsonObject leeJsonLatLong(double lat, double lon){
         return leeJSON("http://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
     }
 
+    //EJ3
     public JsonObject leeJsonLatLongN(double lat, double lon,int num){
         return leeJSON("http://api.openweathermap.org/data/2.5/find?lat="+lat+"&lon="+lon+"64&cnt="+num+"&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
     }
 
+    // EJ5
     public int idLocalidad(String localidad){
         JsonObject root = leeJsonLocalidad(localidad);
         return root.getInt("id");
     }
 
+    //EJ6
     public String nombreLocalidad(int id){
         JsonObject root = leeJSON("http://api.openweathermap.org/data/2.5/weather?id="+id+"&lang=es&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
         return root.getString("name");
@@ -113,6 +125,7 @@ class Jsonn {
         return root.getString("name");
     }
 
+    //EJ7
     public double[] coordLocalidad(String localidad) {
         double[] res = new double[2];
         JsonObject root = leeJsonLocalidad(localidad);
@@ -122,6 +135,7 @@ class Jsonn {
         return res;
     }
 
+    //EJ8
     public JsonObject datosLocalidad(String localidad){
         JsonObject root = leeJsonLocalidad(localidad);
         String fecha = unixTimeToString(root.getJsonNumber("dt").longValue());
@@ -141,12 +155,12 @@ class Jsonn {
         return builder.build();
     }
 
-public String unixTimeToString(long unixTime ){
+    public String unixTimeToString(long unixTime ){
         DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return Instant.ofEpochSecond(unixTime).atZone(ZoneId.of("GMT+1")).format(formatter);
-}
+    }
 
-    public JsonObject encontrarLocalidadPorNombre(JsonValue root,String localidad){//No hacía falta
+    /*public JsonObject encontrarLocalidadPorNombre(JsonValue root,String localidad){//No hacía falta
         JsonObject rootobj = root.asJsonObject();
         JsonArray localidades = rootobj.getJsonArray("list");
         for(int i = 0;i < localidades.size();i++){
@@ -167,5 +181,5 @@ public String unixTimeToString(long unixTime ){
             }
         }
         return null;
-    }
+    }*/
 }
