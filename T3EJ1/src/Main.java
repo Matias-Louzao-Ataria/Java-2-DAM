@@ -14,6 +14,7 @@ import javax.json.JsonWriter;
 import javax.json.JsonReader;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.net.ssl.HttpsURLConnection;
@@ -25,7 +26,7 @@ import javax.net.ssl.HttpsURLConnection;
 //EJ6 desde linea:118 hasta linea: 126
 //EJ7 desde linea:128 hasta linea: 136
 //EJ8 desde linea:138 hasta linea: 156
-
+//EJ9 desde linea:158 hasta linea: 167
 public class Main {
     public static void main(String[] args) throws Exception {
         Jsonn json = new Jsonn();
@@ -105,7 +106,7 @@ class Jsonn {
 
     //EJ3
     public JsonObject leeJsonLatLongN(double lat, double lon,int num){
-        return leeJSON("http://api.openweathermap.org/data/2.5/find?lat="+lat+"&lon="+lon+"64&cnt="+num+"&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
+        return leeJSON("http://api.openweathermap.org/data/2.5/find?lat="+lat+"&lon="+lon+"&cnt="+num+"&APPID=8f8dccaf02657071004202f05c1fdce0").asJsonObject();
     }
 
     // EJ5
@@ -153,6 +154,16 @@ class Jsonn {
         builder.add("velocidadViento",velocidadViento);
         builder.add("pronostico",pronostico);
         return builder.build();
+    }
+    //EJ9
+    public JsonArray datosLocalidadesXCercanas(double lat,double lon,int num){
+        JsonObject root = leeJsonLatLongN(lat, lon, num);
+        JsonArray list = root.getJsonArray("list");
+        JsonArrayBuilder resbuilder = Json.createArrayBuilder();
+        for(int i = 0;i < list.size();i++){
+            resbuilder.add(datosLocalidad(list.get(i).asJsonObject().getString("name")));
+        }
+        return resbuilder.build();
     }
 
     public String unixTimeToString(long unixTime ){
