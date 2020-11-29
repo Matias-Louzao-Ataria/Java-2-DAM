@@ -27,6 +27,10 @@ import javax.net.ssl.HttpsURLConnection;
 //EJ7 desde linea:128 hasta linea: 136
 //EJ8 desde linea:138 hasta linea: 156
 //EJ9 desde linea:158 hasta linea: 167
+//EJ13 desde linea:180 hasta linea: 192
+//EJ14 desde linea: 196 hasta linea: 198
+//EJ15 desde linea: 202 hasta linea: 215
+//EJ17 desde linea:219 hasta linea: 226
 public class Main {
     public static void main(String[] args) throws Exception {
         Jsonn json = new Jsonn();
@@ -36,9 +40,11 @@ public class Main {
         //System.out.println(json.leeJsonLatLongN(42.23, -8.72,3));
         /*json.escribeJSON(json.leeJsonLocalidad( "Vigo"),new File("A.json"));
         json.escribeJSON(json.leeJsonLatLong( 42.23, -8.72),new File("B.json"));*/
-        System.out.println(json.nombreLocalidad(json.idLocalidad("Vigo")));
+        /*System.out.println(json.nombreLocalidad(json.idLocalidad("Vigo")));
         System.out.println(json.nombreLocalidad(42.23, -8.72));
         System.out.println(json.datosLocalidad("Vigo"));
+        json.preguntasInformatica();*/
+        json.mostrarEventos("vigo",250,3);
     }
 }
 
@@ -171,6 +177,53 @@ class Jsonn {
         return Instant.ofEpochSecond(unixTime).atZone(ZoneId.of("GMT+1")).format(formatter);
     }
 
+
+    //EJ13
+    public void preguntasInformatica(){
+        JsonObject root = leeJSON("https://opentdb.com/api.php?amount=20&category=18&difficulty=hard&type=multiple").asJsonObject();
+        JsonArray results = root.getJsonArray("results");
+        for(int i = 0;i < results.size();i++){
+            JsonObject preguntaActual = results.get(i).asJsonObject();
+            System.out.println(preguntaActual.getString("question"));
+            System.out.println("*"+preguntaActual.getString("correct_answer"));
+            JsonArray respuestasErroneas = preguntaActual.getJsonArray("incorrect_answers");
+            for(int j = 0;j < respuestasErroneas.size();j++){
+                System.out.println(respuestasErroneas.getString(j));
+            }
+        }
+    }
+
+    //EJ14
+    public JsonValue eventosLocalidad(String localidad,int km,int numEventos){
+        return leeJSON("http://api.eventful.com/json/events/search?q=music&l="+localidad+"&units=km&within="+km+"&page_size="+numEventos+"&app_key=c2tPtVFTrSk8xnQS");
+    }
+
+    //EJ15
+    public void mostrarEventos(String localidad, int km, int numEventos){
+        JsonValue root = eventosLocalidad(localidad,km,numEventos);
+        JsonObject events = root.asJsonObject().getJsonObject("events");
+        JsonArray eventos = events.getJsonArray("event");
+        for(int i = 0;i < eventos.size();i++){
+            JsonObject eventoActual = eventos.getJsonObject(i);
+            System.out.println("Nombre: "+eventoActual.getString("title"));
+            System.out.println("Descripción: "+eventoActual.getString("description"));
+            System.out.println("Cuidad: "+eventoActual.getString("city_name"));
+            System.out.println("Dirección: "+eventoActual.getString("venue_address"));
+            System.out.print("tiempo: ");
+            tiempoEnCiudadEventos(eventoActual.getString("city_name"));
+            System.out.println();
+        } 
+    }
+
+    //EJ17
+    public void tiempoEnCiudadEventos(String localidad){
+        JsonObject root = leeJsonLocalidad(localidad);
+        JsonArray weather = root.getJsonArray("weather");
+        for (int i = 0; i < weather.size(); i++) {
+            JsonObject obj = weather.getJsonObject(i);
+            System.out.println(obj.getString("description"));
+        }
+    }
     /*public JsonObject encontrarLocalidadPorNombre(JsonValue root,String localidad){//No hacía falta
         JsonObject rootobj = root.asJsonObject();
         JsonArray localidades = rootobj.getJsonArray("list");
