@@ -1,10 +1,7 @@
 {
-    "java.project.referencedLibraries": {
-        "include": [
-            "lib/**/*.jar",
-            "lib/*.jar"
-        ],
-        "exclude": [
-        ]
-    }
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "lib/*.jar",
+        "/home/matias/Documentos/Java-2-DAM/T3EJ1/**/*.jar"
+    ]
 }
