@@ -7,6 +7,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         JDBC j = new JDBC();
         j.abrirConexion("ad", "localhost", "java", "");
+        j.altaAlumno("test", "test", 1, 20);
         j.cerrarConexion();
     }
 }
@@ -36,10 +37,10 @@ class JDBC {
         }
     }
 
-    public void altaAlumno(int id,String nombre,String apellidos,int altura,int aula){
+    public void altaAlumno(String nombre,String apellidos,int altura,int aula){
         try {
             Statement statement = this.conexion.createStatement();
-            //statement.execute("select * from alumnos;");
+            statement.execute(String.format("insert into alumnos(nombre,apellidos,altura,aula) values('%s','%s',%d,%d);",nombre,apellidos,altura,aula));
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
         }
