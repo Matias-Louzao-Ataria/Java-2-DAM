@@ -1,18 +1,27 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         JDBC j = new JDBC();
-        j.abrirConexion("ad", "localhost", "java", "");
+        /*j.abrirConexion("ad", "localhost", "java", "");
         //j.altaAlumno("test", "test", 1, 20);
         //j.modificarAsignatura(10, "nombre", "apellidos", 12, 21);
         //j.borrarAlumno("test", "test", 1, 20);
-        /*j.altaAsignatura(9,"test");
-        j.borrarAsignatura(9,"test");*/
-        j.cerrarConexion();
+        //j.altaAsignatura(9,"test");
+        //j.modificarAsignatura(9, "a");
+        //j.borrarAsignatura(9,"test");
+        j.aulasConAlumnos();
+        j.alumnosAprobados();
+        j.asignaturasSinAlumnos();
+        j.cerrarConexion();*/
+        int[] veces = {1,10,  100,1000, 10000, 100000, 1000000, 10000000};
+        for (int i = 0; i < veces.length; i++) {
+            System.out.println("Se ha tardado "+j.ejecutarVeces(veces[i])+" en ejecutar "+veces[i]+" veces.");
+        }
     }
 }
 
@@ -24,8 +33,8 @@ class JDBC {
             String url = String.format("jdbc:mariadb://%s:3306/%s",servidor,bd);
             this.conexion = DriverManager.getConnection(url,usuario,password);
         //  Establecemos la conexión con la BD
-            if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
-            else System.out.println ("No se ha conectado a la base de datos "+bd+" en "+servidor);
+            //if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
+            //else System.out.println ("No se ha conectado a la base de datos "+bd+" en "+servidor);
         }catch (SQLException e) {
             System.out.println("SQLException: " +e.getLocalizedMessage());
             System.out.println("SQLState: " +e.getSQLState());
@@ -41,40 +50,54 @@ class JDBC {
         }
     }
 
-    public void altaAlumno(String nombre,String apellidos,int altura,int aula){
+    public int ejecutarUpdate(String str){
+        Statement statement = null;
         try {
-            Statement statement = this.conexion.createStatement();
-            statement.execute(String.format("insert into alumnos(nombre,apellidos,altura,aula) values('%s','%s',%d,%d);",nombre,apellidos,altura,aula));
+            statement = this.conexion.createStatement();
+            return statement.executeUpdate(str);
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
+        }finally{
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.err.println(e.getLocalizedMessage());
+            }
         }
+        return -1;
     }
 
-    public void borrarAlumno(String nombre,String apellidos,int altura,int aula){
+    public ResultSet ejecutarQuery(String str){
+        Statement statement = null;
         try {
-            Statement statement = this.conexion.createStatement();
-            statement.execute(String.format("delete from alumnos where nombre = '%s' && apellidos = '%s' && altura = %d && aula = %d;",nombre,apellidos,altura,aula));
+            statement = this.conexion.createStatement();
+            return statement.executeQuery(str);
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
+        }finally{
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                System.err.println(e.getLocalizedMessage());
+            }
         }
+        return null;
     }
 
-    public void altaAsignatura(int cod,String nombre){
-        try {
-            Statement statement = this.conexion.createStatement();
-            statement.execute(String.format("insert into asignaturas(cod,nombre) values(%d,'%s');",cod,nombre));
-        } catch (SQLException e) {
-            System.err.println(e.getLocalizedMessage());
-        }
+    public int altaAlumno(String nombre,String apellidos,int altura,int aula){
+        return ejecutarUpdate(String.format("insert into alumnos(nombre,apellidos,altura,aula) values('%s','%s',%d,%d);",nombre,apellidos,altura,aula));
     }
 
-    public void borrarAsignatura(int cod,String nombre){
-        try {
-            Statement statement = this.conexion.createStatement();
-            statement.execute(String.format("delete from asignaturas where cod = %d && nombre = '%s';",cod,nombre));
-        } catch (SQLException e) {
-            System.err.println(e.getLocalizedMessage());
-        }
+    public int borrarAlumno(String nombre,String apellidos,int altura,int aula){
+        return ejecutarUpdate(String.format("delete from alumnos where nombre = '%s' && apellidos = '%s' && altura = %d && aula = %d;",nombre,apellidos,altura,aula));
+    }
+
+    public int altaAsignatura(int cod,String nombre){
+        return ejecutarUpdate(String.format("insert into asignaturas(cod,nombre) values(%d,'%s');",cod,nombre));
+    }
+
+    public int borrarAsignatura(int cod,String nombre){
+        return ejecutarUpdate(String.format("delete from asignaturas where cod = %d && nombre = '%s';",cod,nombre));
     }
 
     /**
@@ -85,13 +108,68 @@ class JDBC {
      * @param altura Nueva altura.
      * @param aula Nueva aula.
      */
-    public void modificarAsignatura(int cod,String nombre,String apellidos,int altura,int aula){
-        try {
-            Statement statement = this.conexion.createStatement();
-            statement.execute(String.format("update alumnos set nombre = '%s',apellidos = '%s',altura = %d,aula = %d where codigo = %d;",nombre,apellidos,altura,aula,cod));
+    public int modificarAlumno(int cod,String nombre,String apellidos,int altura,int aula){
+        return ejecutarUpdate(String.format("update alumnos set nombre = '%s',apellidos = '%s',altura = %d,aula = %d where codigo = %d;",nombre,apellidos,altura,aula,cod));
+    }
+
+    public int modificarAsignatura(int cod,String nombre){
+        return ejecutarUpdate(String.format("update asignaturas set nombre = '%s' where cod = %d;",nombre,cod));
+    }
+
+    public void aulasConAlumnos(){
+            ResultSet rs = ejecutarQuery("select nombreAula from aulas where numero in (select aula from alumnos);");
+            try {
+                while (rs.next()) {
+                    //System.out.println("NombreAula: " + rs.getString("nombreAula"));
+                }
+            } catch (SQLException e) {
+                System.err.println(e.getLocalizedMessage());
+            }
+    }
+
+    public void alumnosAprobados(){
+        ResultSet rs = ejecutarQuery("select alumnos.nombre,asignaturas.nombre,notas.nota from alumnos join notas on alumnos.codigo = notas.alumno join asignaturas on notas.asignatura = asignaturas.cod where notas.nota >= 5;");
+        try{    
+            while(rs.next()){
+                //System.out.print("Nombre: "+rs.getString("alumnos.nombre")+"|");
+                //System.out.print("Asignatura: "+rs.getString("asignaturas.nombre")+"|");
+                //System.out.print("Nota: "+rs.getString("notas.nota"));
+                //System.out.println();
+            }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
         }
+    }
+
+    public void asignaturasSinAlumnos(){
+        ResultSet rs = ejecutarQuery("select nombre from asignaturas where cod not in(select asignatura from notas);");
+        try{    
+            while(rs.next()){
+                //System.out.println("Asignatura: "+rs.getString("asignaturas.nombre"));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    //select * from alumnos where nombre like "%a%" && altura > 197;
+
+    public long ejecutarVeces(int veces){
+        long time = System.currentTimeMillis();
+        for (int i = 0; i < veces; i++) {
+            this.abrirConexion("ad", "localhost", "java", "");
+            this.altaAlumno("test", "test", 1, 20);
+            this.modificarAsignatura(9, "nombre");
+            this.borrarAlumno("test", "test", 1, 20);
+            this.altaAsignatura(10,"test");
+            this.modificarAsignatura(10, "a");
+            this.borrarAsignatura(10,"a");
+            this.aulasConAlumnos();
+            this.alumnosAprobados();
+            this.asignaturasSinAlumnos();
+            this.cerrarConexion();
+        }
+        return System.currentTimeMillis()-time;
     }
 
 }
