@@ -33,8 +33,8 @@ class JDBC {
             String url = String.format("jdbc:mariadb://%s:3306/%s",servidor,bd);
             this.conexion = DriverManager.getConnection(url,usuario,password);
         //  Establecemos la conexión con la BD
-            //if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
-            //else System.out.println ("No se ha conectado a la base de datos "+bd+" en "+servidor);
+            if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
+            else System.out.println ("No se ha conectado a la base de datos "+bd+" en "+servidor);
         }catch (SQLException e) {
             System.out.println("SQLException: " +e.getLocalizedMessage());
             System.out.println("SQLState: " +e.getSQLState());
@@ -120,7 +120,7 @@ class JDBC {
             ResultSet rs = ejecutarQuery("select nombreAula from aulas where numero in (select aula from alumnos);");
             try {
                 while (rs.next()) {
-                    //System.out.println("NombreAula: " + rs.getString("nombreAula"));
+                    System.out.println("NombreAula: " + rs.getString("nombreAula"));
                 }
             } catch (SQLException e) {
                 System.err.println(e.getLocalizedMessage());
@@ -131,10 +131,10 @@ class JDBC {
         ResultSet rs = ejecutarQuery("select alumnos.nombre,asignaturas.nombre,notas.nota from alumnos join notas on alumnos.codigo = notas.alumno join asignaturas on notas.asignatura = asignaturas.cod where notas.nota >= 5;");
         try{    
             while(rs.next()){
-                //System.out.print("Nombre: "+rs.getString("alumnos.nombre")+"|");
-                //System.out.print("Asignatura: "+rs.getString("asignaturas.nombre")+"|");
-                //System.out.print("Nota: "+rs.getString("notas.nota"));
-                //System.out.println();
+                System.out.print("Nombre: "+rs.getString("alumnos.nombre")+"|");
+                System.out.print("Asignatura: "+rs.getString("asignaturas.nombre")+"|");
+                System.out.print("Nota: "+rs.getString("notas.nota"));
+                System.out.println();
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
@@ -145,14 +145,23 @@ class JDBC {
         ResultSet rs = ejecutarQuery("select nombre from asignaturas where cod not in(select asignatura from notas);");
         try{    
             while(rs.next()){
-                //System.out.println("Asignatura: "+rs.getString("asignaturas.nombre"));
+                System.out.println("Asignatura: "+rs.getString("asignaturas.nombre"));
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
         }
     }
 
-    //select * from alumnos where nombre like "%a%" && altura > 197;
+    public void alumnosPorPatronDeNombreYAltura(String patron,int altura){
+        ResultSet result = this.ejecutarQuery(String.format("select * from alumnos where nombre like '%s' && altura > %d",patron,altura));
+        try{
+            while(result.next()){
+                System.out.println(result.getString("nombre")+" "+result.getInt("altura"));
+            }
+        }catch(SQLException e){
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
 
     public long ejecutarVeces(int veces){
         long time = System.currentTimeMillis();
