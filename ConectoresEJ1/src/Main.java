@@ -1,5 +1,6 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,9 +19,9 @@ public class Main {
         j.alumnosAprobados();
         j.asignaturasSinAlumnos();
         j.cerrarConexion();*/
-        int[] veces = {1,10,  100,1000, 10000, 100000, 1000000, 10000000};
+        int[] veces = {1};//,10,  100,1000, 10000, 100000, 1000000, 10000000};
         for (int i = 0; i < veces.length; i++) {
-            System.out.println("Se ha tardado "+j.ejecutarVeces(veces[i])+" en ejecutar "+veces[i]+" veces.");
+            System.out.println("Se ha tardado "+j.ejecutarVeces(veces[i])+" ms en ejecutar "+veces[i]+" veces.");
         }
     }
 }
@@ -30,7 +31,7 @@ class JDBC {
     
     public void abrirConexion(String bd, String servidor , String usuario, String password) {
         try {
-            String url = String.format("jdbc:mariadb://%s:3306/%s",servidor,bd);
+            String url = String.format("jdbc:mariadb://%s:3306/%s?useServerPrepStmts=true",servidor,bd);
             this.conexion = DriverManager.getConnection(url,usuario,password);
         //  Establecemos la conexión con la BD
             if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
@@ -152,7 +153,7 @@ class JDBC {
         }
     }
 
-    public void alumnosPorPatronDeNombreYAltura(String patron,int altura){
+    public void alumnosPorPatronDeNombreYAlturaEJ6(String patron,int altura){
         ResultSet result = this.ejecutarQuery(String.format("select * from alumnos where nombre like '%s' && altura > %d",patron,altura));
         try{
             while(result.next()){
@@ -161,6 +162,33 @@ class JDBC {
         }catch(SQLException e){
             System.out.println(e.getLocalizedMessage());
         }
+    }
+
+    public void alumnosPorPatronSentenciaPreparadaEJ6(String patron,int altura){
+        try{
+            PreparedStatement statement = this.conexion.prepareStatement("select * from alumnos where nombre like ? && altura > ?");
+            statement.setString(1, patron);
+            statement.setInt(2, altura);
+            ResultSet result = statement.executeQuery();
+            while(result.next()){
+                System.out.println(result.getString("nombre")+" "+result.getInt("altura"));
+            }
+        }catch(SQLException e){
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public int createColumnEJ9(String table,String field,String dataType,String properties){
+        /*String query = String.format("CREATE TABLE %s");
+        for(int i = 0;i < field.length;i++){
+            if(i != 0 && i != field.length-1){
+                query += ",";
+            }
+            query += String.format(" (%s %s %s);",table,field[i],dataType[i],properties[i]);
+        }*/
+        String query = String.format("alter table %s add column %s %s %s;",table,field,dataType,properties);
+        return this.ejecutarUpdate(query);
+
     }
 
     public long ejecutarVeces(int veces){
@@ -176,6 +204,9 @@ class JDBC {
             this.aulasConAlumnos();
             this.alumnosAprobados();
             this.asignaturasSinAlumnos();
+            this.alumnosPorPatronDeNombreYAlturaEJ6("%a%", 100);
+            this.alumnosPorPatronSentenciaPreparadaEJ6("%a%", 100);
+            this.createColumnEJ9("alumnos","test","int","not null");
             this.cerrarConexion();
         }
         return System.currentTimeMillis()-time;
