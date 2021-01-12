@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,8 +31,8 @@ class JDBC {
     private Connection conexion;
     
     public void abrirConexion(String bd, String servidor , String usuario, String password) {
+        String url = String.format("jdbc:mariadb://%s:3306/%s?useServerPrepStmts=true",servidor,bd);
         try {
-            String url = String.format("jdbc:mariadb://%s:3306/%s?useServerPrepStmts=true",servidor,bd);
             this.conexion = DriverManager.getConnection(url,usuario,password);
         //  Establecemos la conexión con la BD
             if (this.conexion !=null) System.out.println ("Conectado a la base de datos "+bd+" en "+servidor);
@@ -165,8 +166,11 @@ class JDBC {
     }
 
     public void alumnosPorPatronSentenciaPreparadaEJ6(String patron,int altura){
+        PreparedStatement statement = null;
         try{
-            PreparedStatement statement = this.conexion.prepareStatement("select * from alumnos where nombre like ? && altura > ?");
+            if(statement == null){
+                statement = this.conexion.prepareStatement("select * from alumnos where nombre like ? && altura > ?");
+            }
             statement.setString(1, patron);
             statement.setInt(2, altura);
             ResultSet result = statement.executeQuery();
@@ -178,7 +182,7 @@ class JDBC {
         }
     }
 
-    public int createColumnEJ9(String table,String field,String dataType,String properties){
+    public int createColumnEJ8(String table,String field,String dataType,String properties){
         /*String query = String.format("CREATE TABLE %s");
         for(int i = 0;i < field.length;i++){
             if(i != 0 && i != field.length-1){
@@ -189,6 +193,48 @@ class JDBC {
         String query = String.format("alter table %s add column %s %s %s;",table,field,dataType,properties);
         return this.ejecutarUpdate(query);
 
+    }
+
+    public void getDataBaseMetaDataEJ9A(Connection connection){
+        try {
+            DatabaseMetaData dbmd = connection.getMetaData();
+            System.out.println("Driver name: "+dbmd.getDriverName());
+            System.out.println("Driver version: "+dbmd.getDriverVersion());
+            System.out.println("URL:"+dbmd.getURL());
+            System.out.println("Username: "+dbmd.getUserName());
+            System.out.println("SGBD: "+dbmd.getDatabaseProductName());
+            System.out.println("SGBD version: "+dbmd.getDatabaseProductVersion());
+            System.out.println("SGBD key words:"+dbmd.getSQLKeywords());
+            
+            
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void getCatalogsEJ9B(DatabaseMetaData dbmd){
+        ResultSet catalogs;
+        try {
+            catalogs = dbmd.getCatalogs();
+            while(catalogs.next()){
+                String catalog = catalogs.getString("TABLE_CAT");
+                System.out.println(catalog);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void getTablesEJ9C(){//TODO:Hacer bien este.(leer enuncido!)
+        try {
+            ResultSet result = this.ejecutarQuery("show tables;");
+            while (result.next()) {
+                String tables = result.getString("Tables_in_ad");
+                System.out.println(tables);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
     }
 
     public long ejecutarVeces(int veces){
@@ -206,7 +252,14 @@ class JDBC {
             this.asignaturasSinAlumnos();
             this.alumnosPorPatronDeNombreYAlturaEJ6("%a%", 100);
             this.alumnosPorPatronSentenciaPreparadaEJ6("%a%", 100);
-            this.createColumnEJ9("alumnos","test","int","not null");
+            this.createColumnEJ8("alumnos","test","int","not null");
+            this.getDataBaseMetaDataEJ9A(this.conexion);
+            try {
+                this.getCatalogsEJ9B(this.conexion.getMetaData());
+            } catch (SQLException e) {
+                System.err.println(e.getLocalizedMessage());
+            }
+            this.getTablesEJ9C();
             this.cerrarConexion();
         }
         return System.currentTimeMillis()-time;
