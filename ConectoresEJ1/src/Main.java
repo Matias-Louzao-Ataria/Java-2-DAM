@@ -219,18 +219,76 @@ class JDBC {
             while(catalogs.next()){
                 String catalog = catalogs.getString("TABLE_CAT");
                 System.out.println(catalog);
+                EJ9E(catalog, dbmd);
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
         }
     }
 
-    public void getTablesEJ9C(){//TODO:Hacer bien este.(leer enuncido!)
+    public void EJ9E(String db,DatabaseMetaData dbmd){
         try {
-            ResultSet result = this.ejecutarQuery("show tables;");
+            ResultSet tablas = dbmd.getTables(db, null, null, null);
+            while(tablas.next()){
+                String nombre = tablas.getString("TABLE_NAME");
+                String tipo = tablas.getString("TABLE_TYPE");
+                System.out.println(String.format("Nombre: %s, tipo: %s",nombre,tipo));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void getTablesEJ9C(){
+        try {
+            ResultSet result = this.ejecutarQuery("show full tables;");
             while (result.next()) {
                 String tables = result.getString("Tables_in_ad");
                 System.out.println(tables);
+                String tablesType = result.getString("Table_type");
+                System.out.println(tablesType);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void getViewsEJ9D(){
+        try {
+            ResultSet result = this.ejecutarQuery("show full tables where table_type like 'view';");
+            while (result.next()) {
+                String tables = result.getString("Tables_in_ad");
+                System.out.println(tables);
+                String tablesType = result.getString("Table_type");
+                System.out.println(tablesType);
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        } 
+    }
+
+    public void EJ9F(){
+        try {
+            DatabaseMetaData dbmd = this.conexion.getMetaData();
+            ResultSet procedures = dbmd.getProcedures("ad",null,null);
+            while(procedures.next()){
+                System.out.println(procedures.getString("PROCEDURE_NAME"));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void EJ9G(){
+        DatabaseMetaData dbmd;
+        try {
+            dbmd = this.conexion.getMetaData();
+            ResultSet bases = dbmd.getCatalogs();
+            while(bases.next()){
+                String db = bases.getString("TABLE_CAT");
+                if(db.charAt(0) == 'a'){
+                    
+                }
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
@@ -260,6 +318,8 @@ class JDBC {
                 System.err.println(e.getLocalizedMessage());
             }
             this.getTablesEJ9C();
+            this.getViewsEJ9D();
+            this.EJ9F();
             this.cerrarConexion();
         }
         return System.currentTimeMillis()-time;
