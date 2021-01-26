@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.sql.Statement;
 
 public class Main {
@@ -286,11 +287,26 @@ class JDBC {
             ResultSet bases = dbmd.getCatalogs();
             while(bases.next()){
                 String db = bases.getString("TABLE_CAT");
-                if(db.charAt(0) == 'a'){
-                    
+                if(db.equals("ad")){
+                    //dbmd.getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)
+                    ResultSet columnas = dbmd.getColumns(db,null,null,null);
+                    while(columnas.next()){
+                        System.out.println("Posicion: "+columnas.getString("ORDINAL_POSITION")+" , Base de datos: "+columnas.getString("TABLE_CAT")+" , Nombre de la tabla: "+columnas.getString("TABLE_NAME")+" , Tipo de dato: "+columnas.getString("DATA_TYPE")+" , Tamaño de la columna: "+columnas.getString("COLUMN_SIZE")+" , Admite nulos: "+columnas.getString("NULLABLE"));
+                    }
                 }
             }
         } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
+    public void EJ9H(){
+        DatabaseMetaData dbmd;
+        try{
+            dbmd = this.conexion.getMetaData();
+            ResultSet bases = dbmd.getCatalogs();
+            //ResultSet claves = dbmd.getPrimaryKeys(catalog, schema, table)
+        }catch(SQLException e){
             System.err.println(e.getLocalizedMessage());
         }
     }
@@ -320,6 +336,7 @@ class JDBC {
             this.getTablesEJ9C();
             this.getViewsEJ9D();
             this.EJ9F();
+            this.EJ9G();
             this.cerrarConexion();
         }
         return System.currentTimeMillis()-time;
