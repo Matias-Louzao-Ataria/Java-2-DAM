@@ -3,6 +3,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLType;
 import java.sql.Statement;
@@ -243,12 +244,20 @@ class JDBC {
 
     public void getTablesEJ9C(){
         try {
-            ResultSet result = this.ejecutarQuery("show full tables;");
+            DatabaseMetaData dbmd = this.conexion.getMetaData();
+            ResultSet result = dbmd.getCatalogs();
+            //ResultSet result = this.ejecutarQuery("show full tables;");
             while (result.next()) {
-                String tables = result.getString("Tables_in_ad");
-                System.out.println(tables);
-                String tablesType = result.getString("Table_type");
-                System.out.println(tablesType);
+                String db = result.getString("TABLE_CAT");
+                if(db.equals("ad")){
+                    ResultSet tablas = dbmd.getTables(db,null,null,null);
+                    while(tablas.next()){
+                        String tables = tablas.getString("TABLE_NAME");
+                        System.out.println(tables);
+                        String tablesType = tablas.getString("TABLE_TYPE");
+                        System.out.println(tablesType);
+                    }
+                }
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
@@ -335,7 +344,21 @@ class JDBC {
         }
     }
 
-
+    public void EJ10(){
+        ResultSet res = ejecutarQuery("select *, nombre as non from alumnos");
+        try {
+            ResultSetMetaData metaData =  res.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                System.out.println("Nombre de la columna: "+metaData.getColumnName(i)+
+                "\nAlias de la columna: "+metaData.getColumnLabel(i)+
+                "\nNombre del tipo de dato: "+metaData.getColumnTypeName(i)+
+                "\nAutoincrement: "+metaData.isAutoIncrement(i)+
+                "\nNulleable: "+metaData.isNullable(i));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
 
 
     public long ejecutarVeces(int veces){
@@ -365,6 +388,7 @@ class JDBC {
             this.EJ9F();
             this.EJ9G();
             this.EJ9H();
+            this.EJ10();
         }
         this.cerrarConexion();
         return System.currentTimeMillis()-time;
