@@ -1,6 +1,5 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/home/matias/Documentos/**/*.jar"
     ]
 }

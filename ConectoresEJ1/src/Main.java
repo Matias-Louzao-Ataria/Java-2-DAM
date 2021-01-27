@@ -221,6 +221,7 @@ class JDBC {
                 String catalog = catalogs.getString("TABLE_CAT");
                 System.out.println(catalog);
                 EJ9E(catalog, dbmd);
+                EJ9D2(catalog, dbmd);
             }
         } catch (SQLException e) {
             System.err.println(e.getLocalizedMessage());
@@ -268,6 +269,19 @@ class JDBC {
         } 
     }
 
+    public void EJ9D2(String db,DatabaseMetaData dbmd){
+        try {
+            ResultSet tablas = dbmd.getTables(db, null, null, new String[] {"VIEW"});
+            while(tablas.next()){
+                String nombre = tablas.getString("TABLE_NAME");
+                String tipo = tablas.getString("TABLE_TYPE");
+                System.out.println(String.format("Nombre: %s, tipo: %s",nombre,tipo));
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getLocalizedMessage());
+        }
+    }
+
     public void EJ9F(){
         try {
             DatabaseMetaData dbmd = this.conexion.getMetaData();
@@ -287,12 +301,9 @@ class JDBC {
             ResultSet bases = dbmd.getCatalogs();
             while(bases.next()){
                 String db = bases.getString("TABLE_CAT");
-                if(db.equals("ad")){
-                    //dbmd.getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)
-                    ResultSet columnas = dbmd.getColumns(db,null,null,null);
-                    while(columnas.next()){
-                        System.out.println("Posicion: "+columnas.getString("ORDINAL_POSITION")+" , Base de datos: "+columnas.getString("TABLE_CAT")+" , Nombre de la tabla: "+columnas.getString("TABLE_NAME")+" , Tipo de dato: "+columnas.getString("DATA_TYPE")+" , Tamaño de la columna: "+columnas.getString("COLUMN_SIZE")+" , Admite nulos: "+columnas.getString("NULLABLE"));
-                    }
+                ResultSet columnas = dbmd.getColumns(db,null,"a%",null);
+                while(columnas.next()){
+                    System.out.println("Posicion: "+columnas.getString("ORDINAL_POSITION")+" , Base de datos: "+columnas.getString("TABLE_CAT")+" , Nombre de la tabla: "+columnas.getString("TABLE_NAME")+" , Tipo de dato: "+columnas.getString("TYPE_NAME")+" , Tamaño de la columna: "+columnas.getString("COLUMN_SIZE")+" , Admite nulos: "+columnas.getString("NULLABLE"));
                 }
             }
         } catch (SQLException e) {
@@ -305,16 +316,32 @@ class JDBC {
         try{
             dbmd = this.conexion.getMetaData();
             ResultSet bases = dbmd.getCatalogs();
-            //ResultSet claves = dbmd.getPrimaryKeys(catalog, schema, table)
+            while(bases.next()){
+                String db = bases.getString("TABLE_CAT");
+                if(db.equals("ad")){
+                    ResultSet primaryKeys = dbmd.getPrimaryKeys(db, null, null);
+                    while(primaryKeys.next()){
+                        System.out.println("Nombre de clave primaria: "+primaryKeys.getString("COLUMN_NAME"));
+                    }
+
+                    ResultSet foreingKeys = dbmd.getExportedKeys(db, null, null);
+                    while(foreingKeys.next()){
+                        System.out.println("Nombre de clave foranea: "+foreingKeys.getString("FK_NAME"));
+                    }
+                }
+            }
         }catch(SQLException e){
             System.err.println(e.getLocalizedMessage());
         }
     }
 
+
+
+
     public long ejecutarVeces(int veces){
         long time = System.currentTimeMillis();
+        this.abrirConexion("ad", "localhost", "java", "");
         for (int i = 0; i < veces; i++) {
-            this.abrirConexion("ad", "localhost", "java", "");
             this.altaAlumno("test", "test", 1, 20);
             this.modificarAsignatura(9, "nombre");
             this.borrarAlumno("test", "test", 1, 20);
@@ -337,8 +364,9 @@ class JDBC {
             this.getViewsEJ9D();
             this.EJ9F();
             this.EJ9G();
-            this.cerrarConexion();
+            this.EJ9H();
         }
+        this.cerrarConexion();
         return System.currentTimeMillis()-time;
     }
 
