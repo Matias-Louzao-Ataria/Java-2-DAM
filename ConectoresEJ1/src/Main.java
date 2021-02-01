@@ -1,5 +1,10 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +12,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLType;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -31,6 +38,7 @@ public class Main {
 
 class JDBC {
     private Connection conexion;
+    private String home=System.getProperty("user.home"),sep=System.getProperty("file.separator");
     
     public void abrirConexion(String bd, String servidor , String usuario, String password) {
         String url = String.format("jdbc:mariadb://%s:3306/%s?useServerPrepStmts=true",servidor,bd);
@@ -360,6 +368,47 @@ class JDBC {
         }
     }
 
+    public void EJ11(){
+        //try {
+            Enumeration<Driver> d = DriverManager.getDrivers();
+            System.out.println("Drivers:");
+            while(d.hasMoreElements()){
+                System.out.println(d.nextElement().toString());
+            }
+        /*} catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }*/
+        
+    }
+
+    public void EJ13A(){
+        /*try {
+            PreparedStatement statement = this.conexion.prepareStatement("select * from imagenes");
+            ResultSet set = statement.executeQuery();
+                while(set.next()){
+                   Blob blob = set.getBlob("imagen");
+                } 
+            
+             FileOutputStream out = new FileOutputStream("");
+            
+            statement.setBinaryStream(1, out);
+        } catch (SQLException | IOException e) {
+            System.err.println(e.getLocalizedMessage());
+        }*/
+    }
+
+    public void EJ13B(){
+        try {
+            PreparedStatement statement = this.conexion.prepareStatement("inset into imagenes(nombre,imagen) values(?,?);");
+            FileInputStream in = new FileInputStream(home+sep+"a.png");
+            statement.setString(1, "test");
+            statement.setBinaryStream(2, in);
+            statement.executeQuery();
+        } catch (SQLException | IOException e) {
+            System.err.println(e.getLocalizedMessage());
+        } 
+    }
 
     public long ejecutarVeces(int veces){
         long time = System.currentTimeMillis();
@@ -389,6 +438,8 @@ class JDBC {
             this.EJ9G();
             this.EJ9H();
             this.EJ10();
+            this.EJ11();
+            this.EJ13B();
         }
         this.cerrarConexion();
         return System.currentTimeMillis()-time;
